@@ -1,0 +1,132 @@
+body, html {
+    height: 100%; 
+    margin: 0;
+}
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+.main-content {
+    flex: 1;
+}
+
+.login {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.text-center {
+    text-align: center;
+    width: 100%;
+}
+.img-fluid {
+    display: block;
+    margin: 0 auto;
+}
+.login-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+.login-form {
+    display: flex;
+    text-align: center;
+    flex-direction: column;
+    width: 100%;
+    max-width: 350px;
+}
+.disabled-link {
+    color: #adb5bd;
+}
+.mb-3 {
+    width: 100%;
+}
+.btn {
+    width: auto;
+}
+
+.btn.btn-link.no-hover-bg-blue {
+    color: #007bff; 
+    text-decoration: none;
+}
+
+.btn.btn-link.no-hover-bg-blue:hover,
+.btn.btn-link.no-hover-bg-blue:focus,
+.btn.btn-link.no-hover-bg-blue:active {
+    background-color: transparent !important;
+    color: #007bff !important;
+    text-decoration: none !important;
+    font-weight: bold !important;
+    box-shadow: none !important;
+}
+
+.btn.btn-link.no-hover-bg-red {
+    color: #dc3545;
+    text-decoration: none;
+}
+
+.btn.btn-link.no-hover-bg-red:hover,
+.btn.btn-link.no-hover-bg-red:focus,
+.btn.btn-link.no-hover-bg-red:active {
+    background-color: transparent !important;
+    color: #dc3545 !important;
+    text-decoration: none !important;
+    font-weight: bold !important;
+    box-shadow: none !important;
+}
+
+.third-screen-article {
+    height: 100vh;
+    flex-grow: 1;
+    overflow: visible;
+    padding: 0 20px;
+}
+
+.title-container {
+    padding: 30px;
+    text-align: center;
+    color: #119166;
+    font-size: 2rem;
+    z-index: 100;
+    position: relative;
+}
+
+.form-container {
+    margin: 0 auto;
+    margin-top: 20px;
+    width: 100%;
+    max-width: 500px;
+    padding: 20px;
+    border-radius: 10px;
+    background-color: white;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;
+}
+
+/* Footer Social Icons */
+footer {
+    background-color: #abd5db;
+    padding: 20px;
+    text-align: center;
+}
+.social-icons {
+    text-align: center;
+    margin-top: 10px;
+  }
+
+  .social-icons a {
+    margin: 0 15px;
+    font-size: 2rem;
+  }
+
+  /* Footer text */
+  .footer-text {
+    text-align: center;
+    margin-top: 20px;
+    color: black;
+    font-size: 0.8rem;
+  }
