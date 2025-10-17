@@ -1,10 +1,9 @@
-// Home.jsx
-
 import { useEffect, useState, useContext } from 'react';
 import { Card, Button, Form, Col, Row, Modal, InputGroup } from 'react-bootstrap';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { CartContext } from '../components/CartContext';
+import { formatPrice } from '../utils/formater';
 
 const API_BASE_URL = 'http://localhost/emakick2/apiEK.php';
 const BASE_IMAGE_URL = 'http://localhost/emakick2/imagenes/';
@@ -56,9 +55,12 @@ const Home = () => {
 
     const handleModalVariationChange = (e) => {
         const { name, value } = e.target;
+        // The fix is here: we convert the value to a number only if the name is 'quantity'
+        const newValue = name === 'quantity' ? Number(value) : value;
+        
         setSelectedVariations(prev => ({
             ...prev,
-            [name]: value
+            [name]: newValue
         }));
     };
 
@@ -125,10 +127,20 @@ const Home = () => {
                                         src={`${BASE_IMAGE_URL}${prod.imagen}`} 
                                         style={{ height: '150px', objectFit: 'contain' }} />
                                     <Card.Body>
-                                        <Card.Title>{prod.descripcion}</Card.Title>
-                                        <Card.Text>
-                                            <span className="text-decoration-line-through">${Number(prod.precio_doc).toFixed(2)}</span>
-                                            <strong className="text-danger ms-2">${Number(prod.precio_oferta).toFixed(2)}</strong>
+                                        <Card.Title>{prod.nombre} -{prod.cod_art}- {prod.descripcion}</Card.Title>
+                                        <Card.Text className="mt-auto">
+                                            {prod.is_on_offer === 1 ? (
+                                                <>
+                                                    <span className="text-muted text-decoration-line-through">
+                                                        {formatPrice(prod.precio_doc)}
+                                                    </span>
+                                                    <strong className="text-danger ms-2">
+                                                        {formatPrice(prod.precio_oferta)}
+                                                    </strong>
+                                                </>
+                                            ) : (
+                                                <strong>{formatPrice(prod.precio_doc)}</strong>
+                                            )}
                                         </Card.Text>
                                         <Button variant="primary" onClick={() => handleShowModal(prod)}>Ver Producto</Button>
                                     </Card.Body>
@@ -141,13 +153,17 @@ const Home = () => {
             
             <Modal show={showModal} onHide={handleCloseModal}>
                 <Modal.Header closeButton>
-                    <Modal.Title>{selectedProduct?.descripcion}</Modal.Title>
+                    <Modal.Title>
+                        {selectedProduct?.nombre} -
+                        {selectedProduct?.cod_art} - 
+                        {selectedProduct?.descripcion}
+                    </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     {selectedProduct && (
                         <>
                             <img src={`${BASE_IMAGE_URL}${selectedProduct.imagen}`} alt={selectedProduct.descripcion} className="w-100 mb-3" style={{maxHeight: '300px', objectFit: 'contain'}} />
-                            <p><strong>Precio:</strong> ${Number(selectedProduct.precio_oferta || selectedProduct.precio_doc).toFixed(2)}</p>
+                            <p><strong>Precio:</strong> {formatPrice(selectedProduct.is_on_offer === 1 ? selectedProduct.precio_oferta : selectedProduct.precio_doc)}</p>
                             
                             <Form>
                                 <Form.Group className="mb-3">

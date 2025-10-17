@@ -1,99 +1,89 @@
-// CartContext.jsx
-
 import React, { createContext, useState, useEffect } from 'react';
 
 export const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
-    // Initial state: load cart from localStorage or start with an empty array
-    const [carrito, setCarrito] = useState(() => {
-        try {
-            const storedCart = localStorage.getItem('carrito');
-            return storedCart ? JSON.parse(storedCart) : [];
-        } catch (error) {
-            console.error("Error al cargar el carrito del localStorage:", error);
-            return [];
-        }
-    });
+  const [carrito, setCarrito] = useState(() => {
+    // Load cart from local storage on initial render
+    try {
+      const savedCart = localStorage.getItem('carrito');
+      return savedCart ? JSON.parse(savedCart) : [];
+    } catch (error) {
+      console.error("Failed to load cart from localStorage", error);
+      return [];
+    }
+  });
 
-    // Save cart to localStorage whenever it changes
-    useEffect(() => {
-        try {
-            localStorage.setItem('carrito', JSON.stringify(carrito));
-        } catch (error) {
-            console.error("Error al guardar el carrito en el localStorage:", error);
-        }
-    }, [carrito]);
+  // Save cart to local storage whenever it changes
+  useEffect(() => {
+    try {
+      localStorage.setItem('carrito', JSON.stringify(carrito));
+    } catch (error) {
+      console.error("Failed to save cart to localStorage", error);
+    }
+  }, [carrito]);
 
-    // Agregar producto al carrito
-    // La función ahora recibe un objeto completo con todas las propiedades necesarias
-    const agregarAlCarrito = (itemToAdd) => {
-        setCarrito((prevCarrito) => {
-            // Buscamos si ya existe un item con el mismo ID, color y talla
-            const existe = prevCarrito.find(
-                (item) => item.id === itemToAdd.id && item.color === itemToAdd.color && item.talla === itemToAdd.talla
-            );
-
-            if (existe) {
-                // Si existe, actualizamos la cantidad
-                return prevCarrito.map((item) =>
-                    item.id === itemToAdd.id && item.color === itemToAdd.color && item.talla === itemToAdd.talla
-                        ? { ...item, quantity: item.quantity + itemToAdd.quantity } // Sumamos la cantidad nueva
-                        : item
-                );
-            }
-            // Si no existe, agregamos el nuevo item
-            return [...prevCarrito, itemToAdd];
-        });
-    };
-
-    // Eliminar producto del carrito por su ID, color y talla
-    const eliminarDelCarrito = (id, color, talla) => {
-        setCarrito((prevCarrito) =>
-            prevCarrito.filter((item) => !(item.id === id && item.color === color && item.talla === talla))
-        );
-    };
-
-    // Aumentar la cantidad de un producto
-    const aumentarCantidad = (id, color, talla) => {
-        setCarrito(prevCarrito =>
-            prevCarrito.map(item =>
-                item.id === id && item.color === color && item.talla === talla
-                    ? { ...item, quantity: item.quantity + 1 }
-                    : item
-            )
-        );
-    };
-
-    // Disminuir la cantidad de un producto
-    const disminuirCantidad = (id, color, talla) => {
-        setCarrito(prevCarrito =>
-            prevCarrito.map(item =>
-                item.id === id && item.color === color && item.talla === talla
-                    ? { ...item, quantity: Math.max(1, item.quantity - 1) }
-                    : item
-            )
-        );
-    };
-
-    // Vaciar el carrito
-    const vaciarCarrito = () => {
-        setCarrito([]);
-    };
-
-    return (
-        <CartContext.Provider
-            value={{
-                carrito,
-                setCarrito,
-                agregarAlCarrito,
-                eliminarDelCarrito,
-                vaciarCarrito,
-                aumentarCantidad,
-                disminuirCantidad
-            }}
-        >
-            {children}
-        </CartContext.Provider>
+  const agregarAlCarrito = (item) => {
+    const existingItem = carrito.find(cartItem => 
+      cartItem.id === item.id && 
+      cartItem.color === item.color && 
+      cartItem.talla === item.talla
     );
+    if (existingItem) {
+      setCarrito(
+        carrito.map(cartItem =>
+          cartItem.id === item.id && cartItem.color === item.color && cartItem.talla === item.talla
+            ? { ...cartItem, quantity: cartItem.quantity + item.quantity }
+            : cartItem
+        )
+      );
+    } else {
+      setCarrito([...carrito, { ...item }]);
+    }
+  };
+
+  const eliminarDelCarrito = (item) => {
+    setCarrito(carrito.filter(cartItem => {
+      const cartItemKey = `${cartItem.id}-${cartItem.color || 'no-color'}-${cartItem.talla || 'no-size'}`;
+      const itemKey = `${item.id}-${item.color || 'no-color'}-${item.talla || 'no-size'}`;
+      return cartItemKey !== itemKey;
+    }));
+  };
+
+  const vaciarCarrito = () => {
+    setCarrito([]);
+  };
+
+  const aumentarCantidad = (item) => {
+    setCarrito(
+      carrito.map(cartItem =>
+        cartItem.id === item.id && cartItem.color === item.color && cartItem.talla === item.talla
+          ? { ...cartItem, quantity: cartItem.quantity + 1 }
+          : cartItem
+      )
+    );
+  };
+
+  const disminuirCantidad = (item) => {
+    setCarrito(
+      carrito.map(cartItem =>
+        cartItem.id === item.id && cartItem.color === item.color && cartItem.talla === item.talla
+          ? { ...cartItem, quantity: cartItem.quantity - 1 }
+          : cartItem
+      ).filter(cartItem => cartItem.quantity > 0)
+    );
+  };
+
+  return (
+    <CartContext.Provider value={{
+      carrito,
+      agregarAlCarrito,
+      eliminarDelCarrito,
+      vaciarCarrito,
+      aumentarCantidad,
+      disminuirCantidad
+    }}>
+      {children}
+    </CartContext.Provider>
+  );
 };

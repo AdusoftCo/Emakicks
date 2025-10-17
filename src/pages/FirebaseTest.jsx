@@ -1,12 +1,23 @@
-import React, { useContext, useState } from 'react';
-import { Container, Button, Row, Col, Form, Spinner, Card } from 'react-bootstrap';
+import React, { useContext, useState, useEffect } from 'react';
+import { Container, Button, Row, Col, Form, Spinner } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { CartContext } from '../components/CartContext';
 import { formatPrice } from '../utils/formater';
 
+// Import Firebase modules
+import { initializeApp, getApps } from 'firebase/app';
+import { getAuth, signInAnonymously, signInWithCustomToken } from 'firebase/auth';
+import { getFirestore, collection, addDoc, serverTimestamp } from 'firebase/firestore';
+
+// Global variables from the Canvas environment
+const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+const appId = 'emakicks-3091f'; // <--- We are using your actual project ID here
+const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
 const BASE_IMAGE_URL = 'http://localhost/emakick2/imagenes/';
 
 const Carrito = () => {
+    // Correctly place all state variables and hooks inside the component
     const { carrito, eliminarDelCarrito, aumentarCantidad, disminuirCantidad, vaciarCarrito } = useContext(CartContext);
     
     const [deliveryOption, setDeliveryOption] = useState('pickup');
@@ -14,48 +25,50 @@ const Carrito = () => {
     const [shippingOptions, setShippingOptions] = useState([]);
     const [selectedShippingOptionIndex, setSelectedShippingOptionIndex] = useState(null);
     const [loading, setLoading] = useState(false);
+    const [showPaymentDetails, setShowPaymentDetails] = useState(false);
+    const [orderId, setOrderId] = useState(null);
+    const [savingOrder, setSavingOrder] = useState(false);
+
+    const [auth, setAuth] = useState(null);
+    const [db, setDb] = useState(null);
     
-    const [showPaymentForm, setShowPaymentForm] = useState(false);
-    const [customerInfo, setCustomerInfo] = useState({
-        name: '',
-        email: '',
-        paymentMethod: 'Transferencia Bancaria',
-    });
-    
+    // Initialize Firebase and handle auth state only once when the component mounts
+    useEffect(() => {
+        try {
+            const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
+            setAuth(getAuth(app));
+            setDb(getFirestore(app));
+        } catch (err) {
+            console.error("Firebase initialization failed:", err);
+        }
+    }, []);
+
+    useEffect(() => {
+        if (auth) {
+            const signIn = async () => {
+                try {
+                    if (initialAuthToken) {
+                        await signInWithCustomToken(auth, initialAuthToken);
+                    } else {
+                        await signInAnonymously(auth);
+                    }
+                } catch (error) {
+                    console.error("Firebase auth error:", error);
+                    await signInAnonymously(auth);
+                }
+            };
+            signIn();
+        }
+    }, [auth]);
+
+    const selectedShippingOption = shippingOptions[selectedShippingOptionIndex];
     const currencyFormatter = new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' });
 
     const subtotal = carrito.reduce((acc, item) => acc + (item.precio_oferta || item.precio_doc) * item.quantity, 0);
-    const finalTotal = subtotal + (shippingOptions[selectedShippingOptionIndex]?.price || 0);
+    const finalTotal = subtotal + (selectedShippingOption?.price || 0);
 
     const getItemKey = (item) => `${item.id}-${item.color || 'no-color'}-${item.talla || 'no-size'}`;
 
-    const paymentDetails = {
-        'Transferencia Bancaria': {
-            title: 'Datos para Transferencia Bancaria',
-            info: (
-                <>
-                    <p>CBU: 1234567890123456789012</p>
-                    <p>Alias: TU.ALIAS.MP</p>
-                    <p>Titular: Tu Nombre Completo</p>
-                </>
-            ),
-        },
-        'Mercado Pago': {
-            title: 'Datos para Mercado Pago',
-            info: (
-                <>
-                    <p>Alias: TU.ALIAS.MP</p>
-                    <p>Código QR: Escanear en la app</p>
-                    <img src="https://placehold.co/150x150/EAEAEA/333333?text=QR+MP" alt="QR Code" className="img-fluid my-2" />
-                </>
-            ),
-        },
-        'Efectivo (Retiro en tienda)': {
-            title: 'Pago en Efectivo',
-            info: <p>Podrás abonar en efectivo al momento de retirar tu pedido en la tienda.</p>,
-        },
-    };
-    
     const handleCalculateShipping = async () => {
         setLoading(true);
         setShippingOptions([]);
@@ -79,9 +92,8 @@ const Carrito = () => {
 
             const data = await response.json();
             
-            // ================================================================
-            console.log('Respuesta de la API de envío:', data);
-
+            console.log('API Response Data:', data);
+            
             setShippingOptions(data.options);
             if (data.options?.length > 0) {
                 setSelectedShippingOptionIndex(0);
@@ -95,58 +107,53 @@ const Carrito = () => {
         }
     };
 
+    useEffect(() => {
+        if (deliveryOption === 'pickup') {
+            setSelectedShippingOptionIndex(null);
+            setShippingOptions([]);
+        }
+    }, [deliveryOption]);
+
     const handleShippingOptionChange = (index) => {
         setSelectedShippingOptionIndex(index);
     };
 
-    const handleProceedToPayment = () => {
-        if (carrito.length === 0) return;
-        setShowPaymentForm(true);
-    };
-
-    const handleCustomerInfoChange = (e) => {
-        const { name, value } = e.target;
-        setCustomerInfo(prev => ({ ...prev, [name]: value }));
-    };
-
-    const handleFinalCheckout = () => {
-        const selectedShippingOption = shippingOptions[selectedShippingOptionIndex];
-
-        const orderSummary = carrito.map(item =>
-            `Producto: ${item.descripcion} (x${item.quantity})\n` +
-            `Precio unitario: ${formatPrice(item.precio_oferta || item.precio_doc)}\n` +
-            (item.color ? `Color: ${item.color}\n` : '') +
-            (item.talla ? `Talla: ${item.talla}\n` : '')
-        ).join('\n');
-
-        const shippingDetails = deliveryOption === 'delivery' && selectedShippingOption
-            ? `\nTipo de Envío: ${selectedShippingOption.name}\nCosto de Envío: ${formatPrice(selectedShippingOption.price)}\nEntrega: ${selectedShippingOption.days}`
-            : '\nRetiro en tienda';
-
-        const whatsappMessage = 
-            `¡Hola! Me gustaría hacer un pedido.\n\n` +
-            `*Información del Cliente:*\n` +
-            `Nombre: ${customerInfo.name}\n` +
-            `Email: ${customerInfo.email}\n\n` +
-            `*Detalles del Pedido:*\n` +
-            `------------------------------------\n` +
-            `${orderSummary}\n` +
-            `------------------------------------\n` +
-            `Subtotal: ${formatPrice(subtotal)}\n` +
-            `Total Final: ${formatPrice(finalTotal)}\n` +
-            `\n*Método de Entrega:*\n` +
-            `${shippingDetails}\n\n` +
-            `*Método de Pago Seleccionado:*\n` +
-            `${customerInfo.paymentMethod}\n\n` +
-            `¡Pago pendiente!`;
-        
-        const sellerPhoneNumber = '5491150511072';
-        const whatsappUrl = `https://wa.me/${sellerPhoneNumber}?text=${encodeURIComponent(whatsappMessage)}`;
-        
-        window.open(whatsappUrl, '_blank');
-        
-        vaciarCarrito();
-        setShowPaymentForm(false);
+    const handleCheckout = async () => {
+        setSavingOrder(true);
+    
+        try {
+            const userId = auth?.currentUser?.uid || 'anonymous';
+            
+            const orderData = {
+                userId: userId,
+                items: carrito.map(item => ({
+                    id: item.id,
+                    description: item.descripcion,
+                    color: item.color,
+                    talla: item.talla,
+                    quantity: item.quantity,
+                    price: item.precio_oferta || item.precio_doc,
+                })),
+                subtotal: subtotal,
+                finalTotal: finalTotal,
+                deliveryOption: deliveryOption,
+                shippingDetails: deliveryOption === 'delivery' ? selectedShippingOption : null,
+                status: 'pending-payment', // Initial status
+                orderDate: serverTimestamp(),
+            };
+    
+            const ordersCollectionRef = collection(db, `artifacts/${appId}/public/data/orders`);
+            const docRef = await addDoc(ordersCollectionRef, orderData);
+            
+            setOrderId(docRef.id);
+            vaciarCarrito();
+            setShowPaymentDetails(true);
+    
+        } catch (error) {
+            console.error("Error al guardar el pedido:", error);
+        } finally {
+            setSavingOrder(false);
+        }
     };
 
     return (
@@ -158,7 +165,7 @@ const Carrito = () => {
                         <p className="text-center">El carrito está vacío.</p>
                     ) : (
                         <ul className="list-unstyled">
-                            {carrito.map((item) => (
+                            {carrito.map((item, index) => (
                                 <li key={getItemKey(item)} className="mb-4 p-3 border rounded">
                                     <Row className="align-items-center">
                                         <Col xs={3} sm={2}>
@@ -187,11 +194,6 @@ const Carrito = () => {
                             ))}
                         </ul>
                     )}
-                    {carrito.length > 0 && (
-                        <div className="text-center my-4">
-                            <Button variant="outline-danger" onClick={vaciarCarrito}>Vaciar Carrito</Button>
-                        </div>
-                    )}
                 </Col>
                 <Col lg={4}>
                     <div className="border rounded p-4 sticky-top" style={{ top: '20px' }}>
@@ -206,56 +208,13 @@ const Carrito = () => {
                             <span>{currencyFormatter.format(finalTotal)}</span>
                         </h5>
                         <hr />
-                        {showPaymentForm ? (
-                            <Form>
-                                <h5 className="mb-3">Información de Contacto y Pago</h5>
-                                <Form.Group className="mb-3">
-                                    <Form.Label>Nombre Completo</Form.Label>
-                                    <Form.Control 
-                                        type="text" 
-                                        name="name" 
-                                        value={customerInfo.name} 
-                                        onChange={handleCustomerInfoChange} 
-                                        required 
-                                    />
-                                </Form.Group>
-                                <Form.Group className="mb-3">
-                                    <Form.Label>Email</Form.Label>
-                                    <Form.Control 
-                                        type="email" 
-                                        name="email" 
-                                        value={customerInfo.email} 
-                                        onChange={handleCustomerInfoChange} 
-                                        required 
-                                    />
-                                </Form.Group>
-                                <Form.Group className="mb-3">
-                                    <Form.Label>Método de Pago</Form.Label>
-                                    <Form.Select 
-                                        name="paymentMethod" 
-                                        value={customerInfo.paymentMethod} 
-                                        onChange={handleCustomerInfoChange}
-                                    >
-                                        <option>Transferencia Bancaria</option>
-                                        <option>Mercado Pago</option>
-                                        <option>Efectivo (Retiro en tienda)</option>
-                                    </Form.Select>
-                                </Form.Group>
-                                <Card className="mb-3 p-3">
-                                    <h6>{paymentDetails[customerInfo.paymentMethod]?.title}</h6>
-                                    {paymentDetails[customerInfo.paymentMethod]?.info}
-                                </Card>
-                                <Button
-                                    className="w-100"
-                                    onClick={handleFinalCheckout}
-                                    disabled={!customerInfo.name || !customerInfo.email}
-                                >
-                                    Enviar Pedido por WhatsApp
-                                </Button>
-                                <div className="text-center mt-3">
-                                    <Link onClick={() => setShowPaymentForm(false)}>Volver a métodos de entrega</Link>
-                                </div>
-                            </Form>
+                        {showPaymentDetails ? (
+                            <div className="mt-4">
+                                <h5>Detalles de pago</h5>
+                                <p>Tu pedido ha sido creado. ID de Pedido: <strong>{orderId}</strong></p>
+                                <p>Por favor, contacta con el vendedor para finalizar el pago.</p>
+                                <Button variant="success" as={Link} to="/" className="w-100">Volver a la tienda</Button>
+                            </div>
                         ) : (
                             <>
                                 <Form className="mt-4">
@@ -289,8 +248,7 @@ const Carrito = () => {
                                                                 onChange={() => handleShippingOptionChange(index)}
                                                             />
                                                             <label className="form-check-label d-flex justify-content-between" htmlFor={`shipping-${index}`}>
-                                                                {/* Una vez que veas el nombre del campo en la consola, reemplaza "option.days" con el nombre correcto. */}
-                                                                <span>{option.company}({option.deliveryTimeMin}-{option.deliveryTimeMax} días)</span>
+                                                                <span>{option.name}</span>
                                                                 <span>{currencyFormatter.format(option.price)}</span>
                                                             </label>
                                                         </div>
@@ -302,10 +260,10 @@ const Carrito = () => {
                                 </Form>
                                 <Button
                                     className="w-100"
-                                    onClick={handleProceedToPayment}
-                                    disabled={carrito.length === 0 || (deliveryOption === 'delivery' && selectedShippingOptionIndex === null)}
+                                    onClick={handleCheckout}
+                                    disabled={carrito.length === 0 || savingOrder || (deliveryOption === 'delivery' && selectedShippingOptionIndex === null)}
                                 >
-                                    Continuar con el pago
+                                    {savingOrder ? 'Guardando pedido...' : 'Iniciar Compra'}
                                 </Button>
                             </>
                         )}
