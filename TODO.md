@@ -1,17 +1,23 @@
-# Image Upload Fix for CrudProducts.jsx
+# Performance Optimizations TODO
 
-## Steps to Fix:
-1. [ ] Fix file object invalidation issue in handleSubmit
-2. [ ] Add proper axios configuration for file uploads
-3. [ ] Improve error handling for upload failures
-4. [ ] Test the fix
+## 1. Update db.js ✅
+- Add explicit pool configuration: max=20, idleTimeoutMillis=30000, add error handling.
 
-## Current Issue:
-- File object becomes invalid after URL.createObjectURL() for preview
-- ERR_UPLOAD_FILE_CHANGED error occurs during upload
-- Need to ensure file object remains valid for FormData upload
+## 2. Update server.js ✅
+- Install and add compression middleware for gzip.
+- Implement in-memory caching for shipping rates (1-hour TTL by zip code).
 
-## Planned Changes:
-- Create fresh file reference for upload
-- Set proper Content-Type headers for FormData
-- Add detailed error logging
+## 3. Update routes/products.js ✅
+- Add pagination to GET route (page, limit params, default limit=20).
+- Optimize GET query: Use single JOIN for products and variations.
+- Make image saving asynchronous (fs.promises.writeFile).
+- Batch variation inserts in POST and PUT routes.
+
+## 4. Install Dependencies ✅
+- Check and install 'compression' if not present.
+
+## 5. Test Optimizations ✅
+- Run server, test /api/products with pagination.
+- Simulate concurrent requests.
+- Test shipping API caching.
+- Monitor DB query performance.

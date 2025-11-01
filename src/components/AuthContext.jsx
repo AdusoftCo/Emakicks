@@ -17,7 +17,7 @@ export function AuthProvider({ children }) {
 
     const login = ({ role, password }) => {
         // Check for admin credentials
-        if (role === "admin" && password === "cac25017") {
+        if (role === "admin" && password === "cac234") {
             const tokenFalso = "dG9rZW5GYWxzbzEyMzQ=";
             setToken(tokenFalso);
             setUser (role);

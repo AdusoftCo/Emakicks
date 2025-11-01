@@ -1,3 +1,4 @@
+//CrudProducts.jsx
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import {
@@ -75,7 +76,7 @@ const CrudProducts = () => {
     const [isEditing, setIsEditing] = useState(false);
     const [formData, setFormData] = useState({
         descripcion: '',
-        fabricante_id: '',
+        id_prov: '',
         cod_art: '',
         precio_doc: '',
         precio_oferta: '',
@@ -89,9 +90,9 @@ const CrudProducts = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
 
-    const API_URL = 'http://localhost/emakick2/apiEK.php';
-    const IMAGES_BASE_URL = 'http://localhost/emakick2/imagenes/';
-
+    const API_BASE_URL = 'http://localhost:3001/api/products';
+    const BASE_IMAGE_URL = 'http://localhost:3001/imagenes/';
+    
     useEffect(() => {
         const cleanup = loadBootstrapCSS();
         return cleanup;
@@ -99,28 +100,28 @@ const CrudProducts = () => {
 
     // Fetch products from the API
     const fetchProducts = async () => {
+        if (loading) return; // ✅ prevent loop
         setLoading(true);
         try {
-            const response = await axios.get(API_URL);
-            setProducts(response.data);
-            setError('');
+          const response = await axios.get(API_BASE_URL);
+          setProducts(response.data);
+          console.trace();
         } catch (err) {
-            console.error('Error fetching products:', err);
-            setError('Error al cargar productos. Por favor, revisa la consola para más detalles.');
+          console.error('Error fetching products:', err);
         } finally {
-            setLoading(false);
+          setLoading(false);
         }
-    };
-
+      };
+      
     // Fetch manufacturers from the API
     const fetchManufacturers = async () => {
         try {
-            const response = await axios.get(`${API_URL}?table=fabricants`);
-            setManufacturers(response.data);
+          const response = await axios.get(`${API_BASE_URL}/fabricants`);
+          setManufacturers(response.data);
         } catch (err) {
-            console.error('Error fetching manufacturers:', err);
+          console.error('Error fetching manufacturers:', err);
         }
-    };
+      };
 
     useEffect(() => {
         fetchProducts();
@@ -130,35 +131,34 @@ const CrudProducts = () => {
     // Open the modal for editing or creating a product
     const openModal = (product = null) => {
         if (product) {
-            setSelectedProduct(product);
-            setIsEditing(true);
-            setFormData({
-                ...product,
-                fabricante_id: product.id_prov,
-                is_on_offer: product.is_on_offer === 1,
-                variaciones: JSON.stringify(product.variaciones, null, 2),
-            });
-            // Set the preview to the existing image
-            setImagePreviewUrl(`${IMAGES_BASE_URL}${product.imagen}`);
+          const safeVariaciones = Array.isArray(product.variaciones) ? product.variaciones : [];
+          setSelectedProduct(product);
+          setFormData({
+            ...product,
+            id_prov: String(product.id_prov),
+            is_on_offer: product.is_on_offer === true,
+            variaciones: JSON.stringify(safeVariaciones, null, 2),
+          });
         } else {
-            setSelectedProduct(null);
-            setIsEditing(false);
-            setFormData({
-                descripcion: '',
-                fabricante_id: '',
-                cod_art: '',
-                precio_doc: '',
-                precio_oferta: '',
-                costo: '',
-                is_on_offer: false,
-                variaciones: '',
-            });
-            setImageFile(null);
-            setImagePreviewUrl('');
+          // ✅ New product: initialize empty form
+          setSelectedProduct(null);
+          setFormData({
+            descripcion: '',
+            cod_art: '',
+            precio_doc: '',
+            precio_oferta: '',
+            costo: '',
+            id_prov: '',
+            is_on_offer: false,
+            imagen_base64: '',
+            imagen_nombre: '',
+            variaciones: '[]',
+          });
         }
+      
         setIsModalOpen(true);
-    };
-
+      };
+      
     // Close the modal
     const closeModal = () => {
         setIsModalOpen(false);
@@ -178,9 +178,9 @@ const CrudProducts = () => {
         };
 
         // Si el campo es 'costo' o 'fabricante_id', recalculamos los precios
-        if (name === 'costo' || name === 'fabricante_id') {
+        if (name === 'costo' || name === 'id_prov') {
             const newCosto = parseFloat(name === 'costo' ? value : formData.costo);
-            const newIdProv = name === 'fabricante_id' ? value : formData.fabricante_id;
+            const newIdProv = name === 'id_prov' ? value : formData.fabricante_id;
 
             if (!isNaN(newCosto) && newIdProv) {
                 const [newPrecioDoc, newPrecioOferta] = calculatePrices(newIdProv, newCosto);
@@ -211,45 +211,46 @@ const CrudProducts = () => {
         e.preventDefault();
         setLoading(true);
         setError('');
-
+      
         try {
-            const data = {
-                ...formData,
-                variaciones: formData.variaciones,
-                is_on_offer: formData.is_on_offer ? 1 : 0,
-            };
+          const data = {
+            ...formData,
+            variaciones: formData.variaciones,
+            is_on_offer: formData.is_on_offer === true,
+          };
+          console.log('Submitting is_on_offer:', formData.is_on_offer ? true : false);
 
-            // CRITICAL FIX: Only send image data if a new file is selected.
-            if (imageFile) {
-                // Convert image to base64
-                const reader = new FileReader();
-                reader.readAsDataURL(imageFile);
-                reader.onloadend = async () => {
-                    const base64String = reader.result;
-                    data.imagen_base64 = base64String;
-                    data.imagen_nombre = imageFile.name;
-                    await submitData(data);
-                };
-            } else {
-                // If no new file, just submit the other data
-                await submitData(data);
-            }
+          if (imageFile) {
+            // Convert image to base64 using a Promise
+            const base64String = await new Promise((resolve, reject) => {
+              const reader = new FileReader();
+              reader.readAsDataURL(imageFile);
+              reader.onloadend = () => resolve(reader.result);
+              reader.onerror = reject;
+            });
+      
+            data.imagen_base64 = base64String;
+            data.imagen_nombre = imageFile.name;
+          }
+      
+          await submitData(data);
         } catch (err) {
-            console.error('Form submission error:', err);
-            setError('Error al guardar los datos. Por favor, revisa la consola.');
-            setLoading(false);
+          console.error('Form submission error:', err);
+          setError('Error al guardar los datos. Por favor, revisa la consola.');
+          setLoading(false);
         }
-    };
+      };
+      
 
     // Submits the form data to the API
     const submitData = async (data) => {
         try {
             if (isEditing) {
                 // Update existing product
-                await axios.put(API_URL, data);
+                await axios.put(API_BASE_URL, data);
             } else {
                 // Create new product
-                await axios.post(API_URL, data);
+                await axios.post(API_BASE_URL, data);
             }
             fetchProducts();
             closeModal();
@@ -266,7 +267,7 @@ const CrudProducts = () => {
     const handleDelete = async (id) => {
         if (window.confirm('¿Estás seguro de que deseas eliminar este producto?')) {
             try {
-                await axios.delete(`${API_URL}?id=${id}`);
+                await axios.delete(`${API_BASE_URL}/${id}`);
                 fetchProducts();
             } catch (err) {
                 console.error('Error deleting product:', err);
@@ -279,7 +280,7 @@ const CrudProducts = () => {
         <Container className="my-5">
             <h1 className="mb-4 text-center">Administración de Productos</h1>
             <div className="d-flex justify-content-end mb-4">
-                <Button variant="primary" onClick={() => openModal()}>
+                <Button variant="primary" onClick={() => openModal(null)}>
                     Crear Nuevo Producto
                 </Button>
             </div>
@@ -306,16 +307,16 @@ const CrudProducts = () => {
                                 <td>{product.cod_art}</td>
                                 <td>
                                     <img
-                                        src={`${IMAGES_BASE_URL}${product.imagen}`}
+                                        src={`${BASE_IMAGE_URL}${product.imagen}`}
                                         alt={product.descripcion}
                                         style={{ width: '64px', height: '64px', objectFit: 'cover' }}
                                         onError={(e) => { e.target.src = 'https://placehold.co/64x64/E2E8F0/A0AEC0?text=No+Img'; }}
                                     />
                                 </td>
                                 <td>{product.descripcion}</td>
-                                <td>{product.nombre}</td>
+                                <td>{product.fabricante_nombre}</td>
                                 <td>
-                                    {product.is_on_offer === 1 ? (
+                                    {product.is_on_offer === true ? (
                                         <>
                                             <span className="text-muted text-decoration-line-through">{formatPrice(product.precio_doc)}</span>{' '}
                                             <span className="text-danger fw-bold">{formatPrice(product.precio_oferta)}</span>
@@ -324,7 +325,7 @@ const CrudProducts = () => {
                                         <span>{formatPrice(product.precio_doc)}</span>
                                     )}
                                 </td>
-                                <td>{product.is_on_offer === 1 ? 'Sí' : 'No'}</td>
+                                <td>{product.is_on_offer ? 'Sí' : 'No'}</td>
                                 <td>
                                     <Button variant="warning" size="sm" onClick={() => openModal(product)} className="me-2">
                                         Editar
@@ -366,15 +367,20 @@ const CrudProducts = () => {
                                 </Form.Group>
                                 <Form.Group className="mb-3">
                                     <Form.Label>Fabricante</Form.Label>
+                                    {selectedProduct?.fabricante_nombre && (
+                                        <div className="mb-2 text-muted">
+                                            <small>Actual: {selectedProduct.fabricante_nombre}</small>
+                                        </div>
+                                    )}
                                     <Form.Select
-                                        name="fabricante_id"
-                                        value={formData.fabricante_id}
+                                        name="id_prov"
+                                        value={formData.id_prov}
                                         onChange={handleInputChange}
                                         required
                                     >
                                         <option value="">Seleccionar fabricante</option>
                                         {manufacturers.map(manuf => (
-                                            <option key={manuf.id} value={manuf.id}>
+                                            <option key={manuf.id} value={String(manuf.id)}>
                                                 {manuf.nombre}
                                             </option>
                                         ))}

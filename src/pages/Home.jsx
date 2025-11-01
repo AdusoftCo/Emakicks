@@ -5,8 +5,8 @@ import { useNavigate } from 'react-router-dom';
 import { CartContext } from '../components/CartContext';
 import { formatPrice } from '../utils/formater';
 
-const API_BASE_URL = 'http://localhost/emakick2/apiEK.php';
-const BASE_IMAGE_URL = 'http://localhost/emakick2/imagenes/';
+const API_BASE_URL = 'http://localhost:3001/api/products';
+const BASE_IMAGE_URL = 'http://localhost:3001/imagenes/';
 
 const Home = () => {
     const [offers, setOffers] = useState([]);
@@ -27,16 +27,16 @@ const Home = () => {
 
     useEffect(() => {
         const fetchData = async () => {
-            try {
-                const offersResponse = await axios.get(`${API_BASE_URL}?type=offers`);
-                setOffers(offersResponse.data);
-            } catch (error) {
-                console.error("Error fetching offers:", error);
-            }
+          try {
+            const offersResponse = await axios.get(`${API_BASE_URL}?type=offers`);
+            setOffers(offersResponse.data);
+          } catch (error) {
+            console.error("Error fetching offers:", error);
+          }
         };
-
+      
         fetchData();
-    }, []);
+      }, []);
 
     const handleShowModal = (product) => {
         setSelectedProduct(product);
@@ -124,7 +124,8 @@ const Home = () => {
                                 <Card className="h-100">
                                     <Card.Img 
                                         variant="top" 
-                                        src={`${BASE_IMAGE_URL}${prod.imagen}`} 
+                                        src={`${BASE_IMAGE_URL}${prod.imagen}`}
+                                        loading="lazy"
                                         style={{ height: '150px', objectFit: 'contain' }} />
                                     <Card.Body>
                                         <Card.Title>{prod.nombre} -{prod.cod_art}- {prod.descripcion}</Card.Title>
@@ -162,7 +163,7 @@ const Home = () => {
                 <Modal.Body>
                     {selectedProduct && (
                         <>
-                            <img src={`${BASE_IMAGE_URL}${selectedProduct.imagen}`} alt={selectedProduct.descripcion} className="w-100 mb-3" style={{maxHeight: '300px', objectFit: 'contain'}} />
+                            <img loading="lazy" src={`${BASE_IMAGE_URL}${selectedProduct.imagen}`} alt={selectedProduct.descripcion} className="w-100 mb-3" style={{maxHeight: '300px', objectFit: 'contain'}} />
                             <p><strong>Precio:</strong> {formatPrice(selectedProduct.is_on_offer === 1 ? selectedProduct.precio_oferta : selectedProduct.precio_doc)}</p>
                             
                             <Form>
