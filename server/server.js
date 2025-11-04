@@ -43,11 +43,13 @@ app.listen(PORT, () => {
 });
 
 // 🧱 SERVIR FRONTEND DESDE /dist
-app.use(express.static(path.join(__dirname, '..', 'dist')));
+if (process.env.SERVE_FRONTEND === 'true') {
+  app.use(express.static(path.join(__dirname, '..', 'client', 'dist')));
 
-app.get(/^\/(?!api).*/, (req, res) => {
-  res.sendFile(path.join(__dirname, '..', 'dist', 'index.html'));
-});
+  app.get(/^\/(?!api).*/, (req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'client', 'dist', 'index.html'));
+  });
+}
 
 // 🔐 CREDENCIALES (usa variables de entorno en producción)
 const CORREO_ARGENTINO_USER = process.env.CORREO_ARGENTINO_USER || 'Emakic';
