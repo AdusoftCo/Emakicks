@@ -9,7 +9,7 @@ services:
     envVars:
       - key: DATABASE_URL
         fromDatabase:
-          name: proyecto_postgres
+          name: emakicks-db
           property: connectionString
       - key: CORREO_ARGENTINO_USER
         value: Emakic
