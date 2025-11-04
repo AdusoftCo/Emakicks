@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: carrito-backend
+    name: emakicks-backend
     env: node
     plan: free
     buildCommand: npm install
@@ -9,11 +9,15 @@ services:
     envVars:
       - key: DATABASE_URL
         fromDatabase:
-          name: carrito-db
+          name: proyecto_postgres
           property: connectionString
+      - key: CORREO_ARGENTINO_USER
+        value: Emakic
+      - key: CORREO_ARGENTINO_PASSWORD
+        value: Casino15+
 
   - type: web
-    name: carrito-frontend
+    name: emakicks-frontend
     env: static
     buildCommand: npm install && npm run build
     staticPublishPath: dist
