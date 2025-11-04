@@ -11,7 +11,7 @@ services:
         fromDatabase:
           name: emakicks-db
           property: connectionString
-      - key: CORREO_ARGENTINO_USER
+      - key: CORREO_ARGENTINO_USE  R
         value: Emakic
       - key: CORREO_ARGENTINO_PASSWORD
         value: Casino15+
