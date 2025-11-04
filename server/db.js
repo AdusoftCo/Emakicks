@@ -1,3 +1,4 @@
+// db.js
 import pkg from 'pg';
 const { Pool } = pkg;
 
@@ -32,4 +33,3 @@ pool.on('error', (err, client) => {
 });
 
 export default pool;
-
