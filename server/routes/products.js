@@ -66,7 +66,7 @@ router.get('/', async (req, res) => {
 
 router.get('/fabricants', async (req, res) => {
   try {
-    const result = await pool.query('SELECT id, nombre FROM fabricants ORDER BY nombre');
+    const result = await pool.query('SELECT id, nombre FROM proyecto.fabricants');
     res.json(result.rows);
   } catch (error) {
     console.error('Error fetching fabricants:', error.message);
@@ -121,7 +121,7 @@ router.post('/', async (req, res) => {
   }
 });
 
-
+// Update
 router.put('/', async (req, res) => {
   try {
     const {
@@ -161,7 +161,7 @@ router.put('/', async (req, res) => {
     }
 
     console.log('Updating product with:', {
-      id, is_on_offer, tipo: typeof is_on_offer
+      id, fabricante_id, tipo: typeof fabricante_id
     });
 
     // ✅ Use finalImageName in your UPDATE query

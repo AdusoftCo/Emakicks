@@ -27,12 +27,12 @@ const loadBootstrapCSS = () => {
 };
 
 // Esta función implementa la lógica de calculos del lado del cliente.
-const calculatePrices = (id_prov, costo) => {
+const calculatePrices = (fabricante_id, costo) => {
     let docena, oferta;
     const costoNum = parseFloat(costo);
     if (isNaN(costoNum)) return [null, null];
 
-    switch (String(id_prov)) {
+    switch (String(fabricante_id)) {
         case '13': {
             const b13 = costoNum * 0.75;
             const d13 = b13 * 1.12;
@@ -76,7 +76,7 @@ const CrudProducts = () => {
     const [isEditing, setIsEditing] = useState(false);
     const [formData, setFormData] = useState({
         descripcion: '',
-        id_prov: '',
+        fabricante_id: '',
         cod_art: '',
         precio_doc: '',
         precio_oferta: '',
@@ -128,19 +128,22 @@ const CrudProducts = () => {
         fetchManufacturers();
     }, []);
 
-    // Open the modal for editing or creating a product
-    const openModal = (product = null) => {
+    const openModal = async (product = null) => {
+        await fetchManufacturers(); // ✅ Ensure dropdown is ready
+
         if (product) {
-          const safeVariaciones = Array.isArray(product.variaciones) ? product.variaciones : [];
-          setSelectedProduct(product);
-          setFormData({
-            ...product,
-            id_prov: String(product.id_prov),
-            is_on_offer: product.is_on_offer === true,
-            variaciones: JSON.stringify(safeVariaciones, null, 2),
-          });
+            
+            const safeVariaciones = Array.isArray(product.variaciones) ? product.variaciones : [];
+            setSelectedProduct(product);
+            setFormData({
+                ...product,
+                fabricante_id: String(product.fabricante_id),
+                is_on_offer: product.is_on_offer === true,
+                variaciones: JSON.stringify(safeVariaciones, null, 2),
+            });
+            setImagePreviewUrl(`${BASE_IMAGE_URL}${product.imagen}`);
+            setIsEditing(true); // ✅ Set editing mode
         } else {
-          // ✅ New product: initialize empty form
           setSelectedProduct(null);
           setFormData({
             descripcion: '',
@@ -148,25 +151,28 @@ const CrudProducts = () => {
             precio_doc: '',
             precio_oferta: '',
             costo: '',
-            id_prov: '',
+            fabricante_id: '',
             is_on_offer: false,
             imagen_base64: '',
             imagen_nombre: '',
             variaciones: '[]',
           });
+          setImagePreviewUrl('');
+          setIsEditing(false); // ✅ Set creation mode
         }
       
         setIsModalOpen(true);
       };
       
-    // Close the modal
+    // Close Modal
     const closeModal = () => {
         setIsModalOpen(false);
-        setLoading(false);
+        setIsEditing(false); // ✅ Reset editing state
         setError('');
         setImageFile(null);
         setImagePreviewUrl('');
-    };
+        };
+      
 
     // Handle form input changes
     const handleInputChange = (e) => {
@@ -178,12 +184,12 @@ const CrudProducts = () => {
         };
 
         // Si el campo es 'costo' o 'fabricante_id', recalculamos los precios
-        if (name === 'costo' || name === 'id_prov') {
+        if (name === 'costo' || name === 'fabricante_id') {
             const newCosto = parseFloat(name === 'costo' ? value : formData.costo);
-            const newIdProv = name === 'id_prov' ? value : formData.fabricante_id;
+            const newFabricanteId = name === 'fabricante_id' ? value : formData.fabricante_id;
 
-            if (!isNaN(newCosto) && newIdProv) {
-                const [newPrecioDoc, newPrecioOferta] = calculatePrices(newIdProv, newCosto);
+            if (!isNaN(newCosto) && newFabricanteId) {
+                const [newPrecioDoc, newPrecioOferta] = calculatePrices(newFabricanteId, newCosto);
                 newFormData.precio_doc = newPrecioDoc;
                 newFormData.precio_oferta = newPrecioOferta;
             } else {
@@ -373,8 +379,8 @@ const CrudProducts = () => {
                                         </div>
                                     )}
                                     <Form.Select
-                                        name="id_prov"
-                                        value={formData.id_prov}
+                                        name="fabricante_id"
+                                        value={formData.fabricante_id}
                                         onChange={handleInputChange}
                                         required
                                     >
