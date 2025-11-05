@@ -10,7 +10,7 @@ services:
       - key: DATABASE_URL
         fromDatabase:
           name: emakicks-db
-          property: connectionString
+          property: dpg-d45ll5buibrs73f8jpn0-a
       - key: CORREO_ARGENTINO_USE
         value: Emakic
       - key: CORREO_ARGENTINO_PASSWORD
