@@ -26,6 +26,9 @@ if (process.env.DATABASE_URL) {
   });
 }
 
+pool.query("SET search_path TO proyecto, public")
+  .catch(err => console.error("Failed to set search_path:", err));
+
 // Handle pool errors
 pool.on('error', (err, client) => {
   console.error('Unexpected error on idle client', err);
