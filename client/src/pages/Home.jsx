@@ -6,8 +6,8 @@ import { useNavigate } from 'react-router-dom';
 import { CartContext } from '../components/CartContext';
 import { formatPrice } from '../utils/formater';
 
-const API_BASE_URL = `${process.env.REACT_APP_API_URL}/api/products`;
-const BASE_IMAGE_URL = `${process.env.REACT_APP_API_URL}/imagenes/`;
+const API_BASE_URL = `${import.meta.env.VITE_API_URL}/api/products`;
+const BASE_IMAGE_URL = `${import.meta.env.VITE_API_URL}/imagenes/`;
 
 const Home = () => {
     const [offers, setOffers] = useState([]);
