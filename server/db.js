@@ -6,6 +6,8 @@ let pool;
 
 if (process.env.DATABASE_URL) {
   // Render or production environment
+  console.log("🚨 DATABASE_URL at runtime:", process.env.DATABASE_URL);
+
   pool = new Pool({
     connectionString: process.env.DATABASE_URL,
     ssl: {
