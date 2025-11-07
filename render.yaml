@@ -1,11 +1,11 @@
 services:
   - type: web
     name: emakicks-backend
-    env: node
+    env: static
     plan: free
-    buildCommand: npm install
-    startCommand: node server.js
-    rootDir: server
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    rootDir: client
     envVars:
       - key: DATABASE_URL
         value: postgresql://emakicks_db_user:p4G6qZrPQA1RfGJ9CG2yn4KnkbRMSQPB@dpg-d45ll5buibrs73f8jpn0-a/emakicks_db
