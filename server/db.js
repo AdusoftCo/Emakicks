@@ -3,6 +3,7 @@ import pkg from 'pg';
 const { Pool } = pkg;
 
 let pool;
+console.log("🚨 DATABASE_URL at runtime:", process.env.DATABASE_URL);
 
 if (process.env.DATABASE_URL) {
   // Render or production environment
