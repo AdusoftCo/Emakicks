@@ -12,6 +12,8 @@ if (process.env.DATABASE_URL) {
       rejectUnauthorized: false,
     },
   });
+  console.log("Using DATABASE_URL:", process.env.DATABASE_URL);
+
 } else {
   // Local development
   pool = new Pool({
