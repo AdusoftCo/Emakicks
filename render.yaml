@@ -8,9 +8,8 @@ services:
     rootDir: server
     envVars:
       - key: DATABASE_URL
-        fromDatabase:
-          name: emakicks-db
-          property: dpg-d45ll5buibrs73f8jpn0-a
+        value: postgresql://emakicks_db_user:p4G6qZrPQA1RfGJ9CG2yn4KnkbRMSQPB@dpg-d45ll5buibrs73f8jpn0-a/emakicks_db
+        
       - key: CORREO_ARGENTINO_USE
         value: Emakic
       - key: CORREO_ARGENTINO_PASSWORD
