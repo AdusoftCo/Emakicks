@@ -1,3 +1,4 @@
+// Home.jsx
 import { useEffect, useState, useContext } from 'react';
 import { Card, Button, Form, Col, Row, Modal, InputGroup } from 'react-bootstrap';
 import axios from 'axios';
@@ -5,8 +6,8 @@ import { useNavigate } from 'react-router-dom';
 import { CartContext } from '../components/CartContext';
 import { formatPrice } from '../utils/formater';
 
-const API_BASE_URL = 'http://localhost:3001/api/products';
-const BASE_IMAGE_URL = 'http://localhost:3001/imagenes/';
+const API_BASE_URL = `${process.env.REACT_APP_API_URL}/api/products`;
+const BASE_IMAGE_URL = `${process.env.REACT_APP_API_URL}/imagenes/`;
 
 const Home = () => {
     const [offers, setOffers] = useState([]);

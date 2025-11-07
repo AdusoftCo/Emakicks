@@ -90,8 +90,8 @@ const CrudProducts = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
 
-    const API_BASE_URL = 'http://localhost:3001/api/products';
-    const BASE_IMAGE_URL = 'http://localhost:3001/imagenes/';
+    const API_BASE_URL = `${process.env.REACT_APP_API_URL}/api/products`;
+    const BASE_IMAGE_URL = `${process.env.REACT_APP_API_URL}/imagenes/`;
     
     useEffect(() => {
         const cleanup = loadBootstrapCSS();
