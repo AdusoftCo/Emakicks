@@ -2,7 +2,7 @@ import React, { useContext, useState } from 'react';
 import { Navbar, Nav, Container, Badge } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import carritoIcon from '../assets/icons8-carrito-de-compras-48.png';
-import newIcon from '../assets/favicon-32x32.png';
+import newIcon from '../assets/icons8-pet-commands-follow-100.png';
 import { CartContext } from '../components/CartContext';
 
 const Navegacion = () => {

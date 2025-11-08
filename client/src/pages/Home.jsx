@@ -164,7 +164,7 @@ const Home = () => {
                 <Modal.Body>
                     {selectedProduct && (
                         <>
-                            <img loading="lazy" src={`${BASE_IMAGE_URL}${selectedProduct.imagen}`} alt={selectedProduct.descripcion} className="w-100 mb-3" style={{maxHeight: '300px', objectFit: 'contain'}} />
+                            <img loading="lazy" src={`${BASE_IMAGE_URL}${selectedProduct.imagen}`} alt={selectedProduct.descripcion} className="w-100 mb-3" style={{maxHeight: '400px', objectFit: 'contain'}} />
                             <p><strong>Precio:</strong> {formatPrice(selectedProduct.is_on_offer === 1 ? selectedProduct.precio_oferta : selectedProduct.precio_doc)}</p>
                             
                             <Form>
