@@ -20,12 +20,18 @@ const Navegacion = () => {
         <Navbar style={{ backgroundColor: '#abd5db' }} variant="dark" expand="lg" expanded={expanded} onToggle={() => setExpanded(!expanded)}>
             <Container>
                 {/* Brand icon on the left */}
-                <Navbar.Brand as={Link} to="/" style={{ display: 'flex', alignItems: 'center' }} onClick={handleNavLinkClick}>
+                <Navbar.Brand
+                    as={Link}
+                    to="/"
+                    className="d-flex align-items-center brand-responsive"
+                    onClick={handleNavLinkClick}
+                    >
                     <img
                         src={newIcon}
                         alt="Icono del Comercio"
-                        style={{ width: '48px', height: '48px', marginLeft: '8px' }}
+                        style={{ width: '48px', height: '48px', marginRight: '8px' }}
                     />
+                    <span className="fw-bold text-dark fs-5">Emakick's</span>
                 </Navbar.Brand>
 
                 {/* Toggle button for mobile */}
@@ -34,7 +40,7 @@ const Navegacion = () => {
                 {/* Main navigation content */}
                 <Navbar.Collapse id="basic-navbar-nav">
                     {/* All links in a single Nav component */}
-                    <Nav className="w-100 d-flex flex-column flex-lg-row text-center">
+                    <Nav className="w-100 text-dark d-flex flex-column flex-lg-row text-center">
                         <Nav.Link as={Link} to="/" onClick={handleNavLinkClick}>Home</Nav.Link>
                         <Nav.Link as={Link} to="/contacto" onClick={handleNavLinkClick}>Contacto</Nav.Link>
                         

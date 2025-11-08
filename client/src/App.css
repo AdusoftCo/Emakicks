@@ -26,6 +26,17 @@
     transform: rotate(360deg);
   }
 }
+.brand-responsive {
+  justify-content: center;
+  width: 100%;
+}
+
+@media (min-width: 992px) {
+  .brand-responsive {
+    justify-content: flex-start;
+    width: auto;
+  }
+}
 
 @media (prefers-reduced-motion: no-preference) {
   a:nth-of-type(2) .logo {
