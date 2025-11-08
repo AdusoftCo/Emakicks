@@ -1,10 +1,11 @@
+// Carrito.jsx
 import React, { useContext, useState } from 'react';
 import { Container, Button, Row, Col, Form, Spinner, Card } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { CartContext } from '../components/CartContext';
 import { formatPrice } from '../utils/formater';
 
-const BASE_IMAGE_URL = 'http://localhost/emakick2/imagenes/';
+const BASE_IMAGE_URL = `${import.meta.env.VITE_API_URL}/imagenes/`;
 
 const Carrito = () => {
     const { carrito, eliminarDelCarrito, aumentarCantidad, disminuirCantidad, vaciarCarrito } = useContext(CartContext);
@@ -62,15 +63,17 @@ const Carrito = () => {
         setSelectedShippingOptionIndex(null);
 
         try {
-            const response = await fetch('http://localhost:3001/api/calculate-shipping', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    zipCode: zipCode,
-                    cartItems: carrito
-                }),
+            const SHIPPING_API_URL = `${import.meta.env.VITE_API_URL}/api/calculate-shipping`;
+
+            const response = await fetch(SHIPPING_API_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                zipCode,
+                cartItems: carrito
+            }),
             });
 
             if (!response.ok) {
