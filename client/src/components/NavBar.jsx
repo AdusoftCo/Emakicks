@@ -17,7 +17,7 @@ const Navegacion = () => {
     };
 
     return (
-        <Navbar bg="dark" variant="dark" expand="lg" expanded={expanded} onToggle={() => setExpanded(!expanded)}>
+        <Navbar style={{ backgroundColor: '#abd5db' }} variant="dark" expand="lg" expanded={expanded} onToggle={() => setExpanded(!expanded)}>
             <Container>
                 {/* Brand icon on the left */}
                 <Navbar.Brand as={Link} to="/" style={{ display: 'flex', alignItems: 'center' }} onClick={handleNavLinkClick}>
