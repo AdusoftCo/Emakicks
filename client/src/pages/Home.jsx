@@ -127,7 +127,7 @@ const Home = () => {
                                         variant="top" 
                                         src={`${BASE_IMAGE_URL}${prod.imagen}`}
                                         loading="lazy"
-                                        style={{ height: '150px', objectFit: 'contain' }} />
+                                        style={{ height: '250px', objectFit: 'contain' }} />
                                     <Card.Body>
                                         <Card.Title>{prod.nombre} -{prod.cod_art}- {prod.descripcion}</Card.Title>
                                         <Card.Text className="mt-auto">
