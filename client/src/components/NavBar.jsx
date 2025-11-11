@@ -18,7 +18,7 @@ const Navegacion = () => {
     };
 
     return (
-        <Navbar style={{ backgroundColor: '#80eba0' }} variant="dark" expand="lg" expanded={expanded} onToggle={() => setExpanded(!expanded)}>
+        <Navbar style={{ backgroundColor: '#a0eb80' }} variant="dark" expand="lg" expanded={expanded} onToggle={() => setExpanded(!expanded)}>
             {/* Brand icon on the left */}
             <Container className="d-flex justify-content-between align-items-center">
                 <div className="d-flex align-items-center">
@@ -43,7 +43,7 @@ const Navegacion = () => {
             {/* Main navigation content */}
             <Navbar.Collapse id="basic-navbar-nav">
                 {/* All links in a single Nav component */}
-                <Nav className="w-100 fw-bold d-flex flex-column flex-lg-row text-center">
+                <Nav className="w-100 d-flex flex-column flex-lg-row text-center fs-5">
                     <Nav.Link as={Link} to="/" onClick={handleNavLinkClick} style={{ color: '#0a3d62' }}>Home</Nav.Link>
                     <Nav.Link as={Link} to="/contacto" onClick={handleNavLinkClick} style={{ color: '#0a3d62' }}>Contacto</Nav.Link>
                     

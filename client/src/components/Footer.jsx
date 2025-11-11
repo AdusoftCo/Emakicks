@@ -4,7 +4,7 @@ import '../Admin.css';
 const Footer = () => {
 
     return (
-        <footer className="text-center mt-5" style={{ backgroundColor: '#abd5db', padding: '20px' }}>
+        <footer className="text-center mt-5" style={{ backgroundColor: '#a0eb80', padding: '20px' }}>
         {/* Social Icons */}
         <div className="social-icons mb-3">
             <a href="https://facebook.com/oaduviri" target="_blank" rel="noopener noreferrer">
