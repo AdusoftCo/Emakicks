@@ -1,3 +1,4 @@
+// Navbar.jsx
 import React, { useContext, useState } from 'react';
 import { Navbar, Nav, Container, Badge } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
@@ -17,48 +18,49 @@ const Navegacion = () => {
     };
 
     return (
-        <Navbar style={{ backgroundColor: '#abd5db' }} variant="dark" expand="lg" expanded={expanded} onToggle={() => setExpanded(!expanded)}>
-            <Container>
-                {/* Brand icon on the left */}
-                <Navbar.Brand
-                    as={Link}
-                    to="/"
-                    className="d-flex align-items-center brand-responsive"
-                    onClick={handleNavLinkClick}
-                    >
-                    <img
-                        src={newIcon}
-                        alt="Icono del Comercio"
-                        style={{ width: '48px', height: '48px', marginRight: '8px' }}
-                    />
-                    <span className="fw-bold text-dark fs-5">Emakick's</span>
-                </Navbar.Brand>
+        <Navbar style={{ backgroundColor: '#80eba0' }} variant="dark" expand="lg" expanded={expanded} onToggle={() => setExpanded(!expanded)}>
+            {/* Brand icon on the left */}
+            <Container className="d-flex justify-content-between align-items-center">
+                <div className="d-flex align-items-center">
+                    <Navbar.Brand
+                        as={Link}
+                        to="/"
+                        className="d-flex align-items-center"
+                        onClick={handleNavLinkClick}
+                        >
+                        <img
+                            src={newIcon}
+                            alt="Icono del Comercio"
+                            style={{ width: '48px', height: '48px', marginRight: '8px' }}
+                        />
+                        <span className="fw-bold text-dark fs-5" style={{ color: '#0a3d62' }}>Emakick's</span>
+                    </Navbar.Brand>
+                </div>
 
-                {/* Toggle button for mobile */}
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
+            </Container>        
 
-                {/* Main navigation content */}
-                <Navbar.Collapse id="basic-navbar-nav">
-                    {/* All links in a single Nav component */}
-                    <Nav className="w-100 text-dark d-flex flex-column flex-lg-row text-center">
-                        <Nav.Link as={Link} to="/" onClick={handleNavLinkClick}>Home</Nav.Link>
-                        <Nav.Link as={Link} to="/contacto" onClick={handleNavLinkClick}>Contacto</Nav.Link>
-                        
-                        {/* The Admin and Cart links are pushed to the right on large screens */}
-                        <div className="ms-lg-auto d-flex flex-column flex-lg-row align-items-center justify-content-center">
-                            <Nav.Link as={Link} to="/admin" onClick={handleNavLinkClick}>Admin</Nav.Link>
-                            <Nav.Link as={Link} to="/carrito" onClick={handleNavLinkClick} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                <img src={carritoIcon} alt="Carrito" style={{ width: '32px', height: '32px', marginRight: '8px' }} />
-                                {totalItems > 0 && (
-                                    <Badge pill bg="light" text="dark">
-                                        {totalItems}
-                                    </Badge>
-                                )}
-                            </Nav.Link>
-                        </div>
-                    </Nav>
-                </Navbar.Collapse>
-            </Container>
+            {/* Main navigation content */}
+            <Navbar.Collapse id="basic-navbar-nav">
+                {/* All links in a single Nav component */}
+                <Nav className="w-100 fw-bold d-flex flex-column flex-lg-row text-center">
+                    <Nav.Link as={Link} to="/" onClick={handleNavLinkClick} style={{ color: '#0a3d62' }}>Home</Nav.Link>
+                    <Nav.Link as={Link} to="/contacto" onClick={handleNavLinkClick} style={{ color: '#0a3d62' }}>Contacto</Nav.Link>
+                    
+                    {/* The Admin and Cart links are pushed to the right on large screens */}
+                    <div className="ms-lg-auto d-flex flex-column flex-lg-row align-items-center justify-content-center">
+                        <Nav.Link as={Link} to="/admin" onClick={handleNavLinkClick}style={{ color: '#0a3d62' }}>Admin</Nav.Link>
+                        <Nav.Link as={Link} to="/carrito" onClick={handleNavLinkClick} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <img src={carritoIcon} alt="Carrito" style={{ width: '32px', height: '32px', marginRight: '8px' }} />
+                            {totalItems > 0 && (
+                                <Badge pill bg="light" text="dark">
+                                    {totalItems}
+                                </Badge>
+                            )}
+                        </Nav.Link>
+                    </div>
+                </Nav>
+            </Navbar.Collapse>
         </Navbar>
     );
 };
