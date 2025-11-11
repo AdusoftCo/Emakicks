@@ -144,7 +144,7 @@ const Home = () => {
                                                 <strong>{formatPrice(prod.precio_doc)}</strong>
                                             )}
                                         </Card.Text>
-                                        <Button variant="primary" onClick={() => handleShowModal(prod)}>Ver Producto</Button>
+                                        <Button style={{ backgroundColor: '#5728b7', color: 'white', borderRadius: '15px' }} onClick={() => handleShowModal(prod)}>Ver Producto</Button>
                                     </Card.Body>
                                 </Card>
                             </Col>

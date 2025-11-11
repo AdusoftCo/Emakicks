@@ -251,6 +251,7 @@ const Carrito = () => {
                                 <Button
                                     className="w-100"
                                     onClick={handleFinalCheckout}
+                                    style={{ backgroundColor: '#5728b7', color: 'white', borderRadius: '5px' }}
                                     disabled={!customerInfo.name || !customerInfo.email}
                                 >
                                     Enviar Pedido por WhatsApp
@@ -306,6 +307,7 @@ const Carrito = () => {
                                 <Button
                                     className="w-100"
                                     onClick={handleProceedToPayment}
+                                    style={{ backgroundColor: '#5728b7', color: 'white', borderRadius: '5px' }}
                                     disabled={carrito.length === 0 || (deliveryOption === 'delivery' && selectedShippingOptionIndex === null)}
                                 >
                                     Continuar con el pago

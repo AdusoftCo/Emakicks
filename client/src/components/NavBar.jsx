@@ -18,7 +18,7 @@ const Navegacion = () => {
     };
 
     return (
-        <Navbar style={{ backgroundColor: '#a0eb80' }} variant="dark" expand="lg" expanded={expanded} onToggle={() => setExpanded(!expanded)}>
+        <Navbar style={{ backgroundColor: '#88e660' }} variant="dark" expand="lg" expanded={expanded} onToggle={() => setExpanded(!expanded)}>
             {/* Brand icon on the left */}
             <Container className="d-flex justify-content-between align-items-center">
                 <div className="d-flex align-items-center">
@@ -31,9 +31,9 @@ const Navegacion = () => {
                         <img
                             src={newIcon}
                             alt="Icono del Comercio"
-                            style={{ width: '48px', height: '48px', marginRight: '8px' }}
+                            style={{ width: '48px', height: '48px', marginRight: '15px' }}
                         />
-                        <span className="fw-bold text-dark fs-5" style={{ color: '#0a3d62' }}>Emakick's</span>
+                        <span className="fw-bold text-dark fs-5" style={{ color: '#0a3d62' }}>EMAKICK'S</span>
                     </Navbar.Brand>
                 </div>
 
