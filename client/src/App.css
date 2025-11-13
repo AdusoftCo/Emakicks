@@ -15,6 +15,34 @@
 .logo.react:hover {
   filter: drop-shadow(0 0 2em #61dafbaa);
 }
+.cursive {
+  font-family: cursive;
+}
+/* Make hamburger icon black */
+.navbar-toggler-icon {
+  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='black' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+}
+
+/* Remove white border when clicked/focused */
+.navbar-toggler:focus {
+  box-shadow: none;
+  outline: none;
+  border: none;
+}
+
+/* Default: Mobile (small screens) */
+.navbar-padding-lg {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+
+/* Desktop: Large screens and up (≥992px) */
+@media (min-width: 992px) {
+  .navbar-padding-lg {
+    padding-left: 7rem;
+    padding-right: 7rem;
+  }
+}
 
 @keyframes logo-spin {
   from {
@@ -22,17 +50,6 @@
   }
   to {
     transform: rotate(360deg);
-  }
-}
-.brand-responsive {
-  justify-content: center;
-  width: 100%;
-}
-
-@media (min-width: 992px) {
-  .brand-responsive {
-    justify-content: flex-start;
-    width: auto;
   }
 }
 

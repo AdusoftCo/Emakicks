@@ -223,7 +223,7 @@ const Home = () => {
                         Cerrar
                     </Button>
                     <Button 
-                        variant="primary" 
+                        style={{ backgroundColor: '#5728b7', color: 'white', borderRadius: '15px' }}
                         onClick={handleModalAddToCart}
                         disabled={!selectedVariations.color || !selectedVariations.talla || selectedVariations.quantity <= 0 || stock === 0}
                     >

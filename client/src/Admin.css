@@ -15,8 +15,9 @@ body, html {
     flex: 1;
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     flex-direction: column;
+    padding-top: 4rem;
 }
 
 .text-center {
@@ -44,9 +45,10 @@ body, html {
 }
 .mb-3 {
     width: 100%;
+    text-align: center;
 }
 .btn {
-    width: auto;
+    display: inline-block;
 }
 
 .btn.btn-link.no-hover-bg-blue {

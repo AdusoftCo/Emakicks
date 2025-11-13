@@ -19,47 +19,67 @@ const Navegacion = () => {
 
     return (
         <Navbar style={{ backgroundColor: '#88e660' }} variant="dark" expand="lg" expanded={expanded} onToggle={() => setExpanded(!expanded)}>
-            {/* Brand icon on the left */}
-            <Container className="d-flex justify-content-between align-items-center">
-                <div className="d-flex align-items-center">
-                    <Navbar.Brand
-                        as={Link}
-                        to="/"
-                        className="d-flex align-items-center"
-                        onClick={handleNavLinkClick}
+            <Container fluid className="navbar-padding-lg">
+                <div className="d-flex flex-column flex-lg-row justify-content-between align-items-center w-100">
+                    {/* Brand and Toggle grouped on mobile */}
+                    <div className="d-flex justify-content-between align-items-center w-100 d-lg-none">
+                        <Navbar.Brand
+                            as={Link}
+                            to="/"
+                            className="d-flex align-items-center mx-auto"
+                            onClick={handleNavLinkClick}
+                            style={{ marginLeft: '0' }}
                         >
-                        <img
+                            <img
                             src={newIcon}
                             alt="Icono del Comercio"
                             style={{ width: '48px', height: '48px', marginRight: '15px' }}
-                        />
-                        <span className="fw-bold text-dark fs-5" style={{ color: '#0a3d62' }}>EMAKICK'S</span>
-                    </Navbar.Brand>
+                            />
+                            <span className="fw-bold text-dark fs-5 cursive" style={{ color: '#0a3d62' }}>EMAKICK'S</span>
+                        </Navbar.Brand>
+
+                        <Navbar.Toggle aria-controls="basic-navbar-nav" />
+                    </div>
+
+                    {/* Desktop layout */}
+                    <div className="d-none d-lg-flex justify-content-between align-items-center w-100">
+                        <Navbar.Brand
+                            as={Link}
+                            to="/"
+                            className="d-flex align-items-center"
+                            onClick={handleNavLinkClick}
+                        >
+                            <img
+                            src={newIcon}
+                            alt="Icono del Comercio"
+                            style={{ width: '48px', height: '48px', marginRight: '15px' }}
+                            />
+                            <span className="fw-bold text-dark fs-5 cursive" style={{ color: '#0a3d62' }}>EMAKICK'S</span>
+                        </Navbar.Brand>
+
+                    <Navbar.Toggle aria-controls="basic-navbar-nav" />
+                    </div>
                 </div>
+            </Container>
 
-                <Navbar.Toggle aria-controls="basic-navbar-nav" />
-            </Container>        
-
-            {/* Main navigation content */}
             <Navbar.Collapse id="basic-navbar-nav">
-                {/* All links in a single Nav component */}
-                <Nav className="w-100 d-flex flex-column flex-lg-row text-center fs-5">
+                <Container className="navbar-padding-lg">
+                <Nav className="w-100 d-flex flex-column flex-lg-row align-items-center">
+                    <div className="d-flex flex-column flex-lg-row">
                     <Nav.Link as={Link} to="/" onClick={handleNavLinkClick} style={{ color: '#0a3d62' }}>Home</Nav.Link>
                     <Nav.Link as={Link} to="/contacto" onClick={handleNavLinkClick} style={{ color: '#0a3d62' }}>Contacto</Nav.Link>
-                    
-                    {/* The Admin and Cart links are pushed to the right on large screens */}
-                    <div className="ms-lg-auto d-flex flex-column flex-lg-row align-items-center justify-content-center">
-                        <Nav.Link as={Link} to="/admin" onClick={handleNavLinkClick}style={{ color: '#0a3d62' }}>Admin</Nav.Link>
-                        <Nav.Link as={Link} to="/carrito" onClick={handleNavLinkClick} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                            <img src={carritoIcon} alt="Carrito" style={{ width: '32px', height: '32px', marginRight: '8px' }} />
-                            {totalItems > 0 && (
-                                <Badge pill bg="light" text="dark">
-                                    {totalItems}
-                                </Badge>
-                            )}
-                        </Nav.Link>
+                    <Nav.Link as={Link} to="/admin" onClick={handleNavLinkClick} style={{ color: '#0a3d62' }}>Admin</Nav.Link>
+                    <Nav.Link as={Link} to="/carrito" onClick={handleNavLinkClick} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <img src={carritoIcon} alt="Carrito" style={{ width: '32px', height: '32px', marginRight: '8px' }} />
+                        {totalItems > 0 && (
+                        <Badge pill bg="light" text="dark">
+                            {totalItems}
+                        </Badge>
+                        )}
+                    </Nav.Link>
                     </div>
                 </Nav>
+                </Container>
             </Navbar.Collapse>
         </Navbar>
     );

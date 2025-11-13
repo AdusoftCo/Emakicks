@@ -72,7 +72,7 @@ const Admin = () => {
                     </div>
 
                     <div className="mb-3 mt-5">
-                        <button type="submit" className="btn rounded-pill btn-block" style={{ backgroundColor: '#5728b7', color: 'white', borderRadius: '5px' }}>
+                        <button type="submit" className="btn btn-block" style={{ backgroundColor: '#5728b7', color: 'white', borderRadius: '15px' }}>
                             Enviar
                         </button>
                     </div>
