@@ -17,7 +17,7 @@
 }
 .cursiv {
   font-family: cursive;
-  font-weight: bold;
+  font-weight: bolder;
 }
 /* Make hamburger icon black */
 .navbar-toggler-icon {

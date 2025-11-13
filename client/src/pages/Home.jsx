@@ -118,7 +118,7 @@ const Home = () => {
         <div className="container mt-4">
             {offers.length > 0 && (
                 <div className="mb-4">
-                    <h3 className="text-center mb-3">Ofertas</h3>
+                    <h3 className="text-center mb-4">OFERTAS DEL MES</h3>
                     <Row xs={1} md={2} lg={4} className="g-4">
                         {offers.map(prod => (
                             <Col key={prod.id}>
