@@ -70,6 +70,7 @@ const calculatePrices = (fabricante_id, costo) => {
 
 const CrudProducts = () => {
     const [products, setProducts] = useState([]);
+    const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
     const [manufacturers, setManufacturers] = useState([]);
     const [selectedProduct, setSelectedProduct] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -97,6 +98,12 @@ const CrudProducts = () => {
         const cleanup = loadBootstrapCSS();
         return cleanup;
     }, []);
+
+    useEffect(() => {
+        const handleResize = () => setIsMobile(window.innerWidth < 768);
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
+      }, []);
 
     // Fetch products from the API
     const fetchProducts = async () => {
@@ -284,9 +291,9 @@ const CrudProducts = () => {
 
     return (
         <Container className="my-5">
-            <h1 className="mb-4 text-center">Administración de Productos</h1>
+            <h1 className="mb-4 text-center">Admin de Productos</h1>
             <div className="d-flex justify-content-end mb-4">
-                <Button variant="primary" onClick={() => openModal(null)}>
+                <Button style={{ backgroundColor: '#5728b7', color: 'white', borderRadius: '15px' }} onClick={() => openModal(null)}>
                     Crear Nuevo Producto
                 </Button>
             </div>
@@ -294,21 +301,49 @@ const CrudProducts = () => {
             {loading && <p className="text-center">Cargando productos...</p>}
             {error && <Alert variant="danger">{error}</Alert>}
 
-            <Table striped bordered hover responsive>
-                <thead>
-                    <tr>
-                        <th>Codigo</th>
-                        <th>Imagen</th>
-                        <th>Descripción</th>
-                        <th>Fabricante</th>
-                        <th>Precio</th>
-                        <th>En Oferta</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {products.length > 0 ? (
-                        products.map(product => (
+            {/* Design Mobile / PC */}
+            {isMobile ? (
+                // Mobile layout
+                products.length > 0 ? (
+                    products.map(product => (
+                    <div className="product-record" key={product.id}>
+                        <img src={`${BASE_IMAGE_URL}${product.imagen}`} alt={product.descripcion} className="product-image" />
+                        <div className="product-field"><strong>Código:</strong> {product.cod_art}</div>
+                        <div className="product-field"><strong>Descripción:</strong> {product.descripcion}</div>
+                        <div className="product-field"><strong>Fabricante:</strong> {product.fabricante_nombre}</div>
+                        <div className="product-field"><strong>Precio Oferta:</strong> {formatPrice(product.precio_doc)}</div>
+                        <div className="product-field"><strong>En Oferta:</strong> {product.is_on_offer ? "Sí" : "No"}</div>
+                        <div className="product-actions">
+                            <Button variant="warning" size="sm" onClick={() => openModal(product)} className="me-2">
+                                    Editar
+                            </Button>
+                            <Button variant="danger" size="sm" onClick={() => handleDelete(product.id)}>
+                                    Eliminar
+                            </Button>
+                        </div>
+                    </div>
+                    ))
+                ) : (
+                    <div>No hay productos disponibles.</div>
+                )
+                ) : (
+
+                // Desktop layout
+                <Table striped bordered hover responsive>
+                    <thead>
+                        <tr>
+                            <th>Codigo</th>
+                            <th>Imagen</th>
+                            <th>Descripción</th>
+                            <th>Fabricante</th>
+                            <th>Precio</th>
+                            <th>En Oferta</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {products.length > 0 ? (
+                            products.map(product => (
                             <tr key={product.id}>
                                 <td>{product.cod_art}</td>
                                 <td>
@@ -322,7 +357,7 @@ const CrudProducts = () => {
                                 <td>{product.descripcion}</td>
                                 <td>{product.fabricante_nombre}</td>
                                 <td>
-                                    {product.is_on_offer === true ? (
+                                    {product.is_on_offer ? (
                                         <>
                                             <span className="text-muted text-decoration-line-through">{formatPrice(product.precio_doc)}</span>{' '}
                                             <span className="text-danger fw-bold">{formatPrice(product.precio_oferta)}</span>
@@ -341,17 +376,19 @@ const CrudProducts = () => {
                                     </Button>
                                 </td>
                             </tr>
-                        ))
-                    ) : (
-                        <tr>
-                            <td colSpan="7" className="text-center">
-                                No hay productos disponibles.
-                            </td>
-                        </tr>
-                    )}
-                </tbody>
-            </Table>
+                            ))
+                        ) : (
+                            <tr>
+                                <td colSpan="7" className="text-center">
+                                    No hay productos disponibles.
+                                </td>
+                            </tr>
+                        )}
+                    </tbody>
+                </Table>
+            )}
 
+            {/* Modal */}
             <Modal show={isModalOpen} onHide={closeModal} centered size="lg">
                 <Modal.Header closeButton>
                     <Modal.Title>{isEditing ? 'Editar Producto' : 'Crear Producto'}</Modal.Title>

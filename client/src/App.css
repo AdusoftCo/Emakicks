@@ -15,9 +15,8 @@
 .logo.react:hover {
   filter: drop-shadow(0 0 2em #61dafbaa);
 }
-.cursiv {
+.cursive {
   font-family: cursive;
-  font-weight: bolder;
 }
 /* Make hamburger icon black */
 .navbar-toggler-icon {
@@ -35,6 +34,31 @@
 .navbar-padding-lg {
   padding-left: 0.5rem;
   padding-right: 0.5rem;
+}
+.product-record {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  background-color: #fff;
+}
+
+.product-image {
+  width: 100%;
+  max-width: 120px;
+  display: block;
+  margin: 0 auto 1rem auto;
+}
+
+.product-field {
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.product-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem;
 }
 
 /* Desktop: Large screens and up (≥992px) */
