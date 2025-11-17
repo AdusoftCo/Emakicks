@@ -20,7 +20,7 @@
 }
 .emakicks-mobile {
   color: #0a3d62 !important;  /* Dark blue */
-  font-weight: bold;          /* Bolder */
+  font-weight: bolder;          /* Bolder */
   font-family: cursive;       /* Keep cursive font */
 }
 /* Make hamburger icon black */

@@ -118,7 +118,7 @@ const Home = () => {
         <div className="container mt-4">
             {offers.length > 0 && (
                 <div className="mb-4">
-                    <h3 className="text-center mb-4">OFERTAS DEL MES</h3>
+                    <h3 className="text-center mb-3">OFERTAS DEL MES</h3>
                     <Row xs={1} md={2} lg={4} className="g-4">
                         {offers.map(prod => (
                             <Col key={prod.id}>
@@ -129,7 +129,7 @@ const Home = () => {
                                         loading="lazy"
                                         style={{ height: '250px', objectFit: 'contain' }} />
                                     <Card.Body>
-                                        <Card.Title>{prod.nombre} -{prod.cod_art}- {prod.descripcion}</Card.Title>
+                                        <Card.Title>{prod.fabricante_nombre} - {prod.descripcion}</Card.Title>
                                         <Card.Text className="mt-auto">
                                             {prod.is_on_offer === 1 ? (
                                                 <>
