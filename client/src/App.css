@@ -60,9 +60,41 @@
   justify-content: center;
   margin-top: 1rem;
 }
+.dashboard-navbar {
+  display: flex;               /* 👈 make it flex on mobile too */
+  justify-content: flex-end;   /* push content to the right */
+  align-items: center;         /* vertical centering */
+  padding: 0.5rem 1rem;
+  width: 100%;
+  box-sizing: border-box;
+  background-color: white;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
 
+.dashboard-navbar .right-group {
+  display: flex;               /* keep items side by side */
+  align-items: center;
+  gap: 1rem;
+  margin-left: auto;           /* ensures they hug the right edge */
+}
 /* Desktop: Large screens and up (≥992px) */
 @media (min-width: 992px) {
+  .dashboard-navbar {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    width: 100%;
+    box-sizing: border-box;
+    background-color: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  
+  /* Right group */
+  .dashboard-navbar .right-group {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
   .navbar-padding-lg {
     padding-left: 7rem;
     padding-right: 7rem;

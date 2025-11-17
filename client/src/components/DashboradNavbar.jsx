@@ -3,23 +3,10 @@
 import React from 'react';
 
 const DashboardNavbar = ({ userName, onLogout }) => {
-    return (
-        <nav style={{
-            display: 'flex',
-            alignItems: 'center',
-            paddingTop: '1rem',    
-            paddingBottom: '1rem', 
-            paddingLeft: '1rem',   
-            paddingRight: '8rem',  
-            width: '100%',
-            boxSizing: 'border-box',
-            backgroundColor: 'white',
-            boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-        }}>
-            
-            <div style={{ flexGrow: 1 }}></div>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+    return (
+        <nav className='dashboard-navbar'>
+            <div className='right-group'>
                 <span style={{ color: '#333333' }}>{userName}</span>
                 <button
                     onClick={onLogout}
