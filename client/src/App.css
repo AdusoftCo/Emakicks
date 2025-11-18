@@ -15,14 +15,11 @@
 .logo.react:hover {
   filter: drop-shadow(0 0 2em #61dafbaa);
 }
-.cursive {
-  font-family: cursive;
+
+.btn-rounded {
+  border-radius: 15px;
 }
-.emakicks-mobile {
-  color: #0a3d62 !important;  /* Dark blue */
-  font-weight: bolder;          /* Bolder */
-  font-family: cursive;       /* Keep cursive font */
-}
+
 /* Make hamburger icon black */
 .navbar-toggler-icon {
   background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='black' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
@@ -82,6 +79,35 @@
   gap: 1rem;
   margin-left: auto;           /* ensures they hug the right edge */
 }
+.cursive {
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+.emakicks-mobile {
+    color: black      !important;  /* Dark blue */
+    font-weight: bolder;          /* Bolder */
+    font-family: cursive;       /* Keep cursive font */
+}
+.whatsapp-float {
+  position: fixed;
+  bottom: 80px;   /* distance from bottom */
+  right: 30px;    /* distance from right */
+  background-color: #25D366; /* WhatsApp green */
+  color: white;
+  border-radius: 50%;
+  padding: 10px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+  z-index: 1000;  /* stays on top */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+
+.whatsapp-float:hover {
+  background-color: #20b954;
+}
+
 /* Desktop: Large screens and up (≥992px) */
 @media (min-width: 992px) {
   .dashboard-navbar {

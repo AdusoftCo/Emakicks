@@ -35,7 +35,7 @@ const Navegacion = () => {
                             alt="Icono del Comercio"
                             style={{ width: '48px', height: '48px', marginRight: '15px' }}
                             />
-                            <span className="text-dark fs-5 cursive emakicks-mobile" style={{ color: '#0a3d62' }}>EMAKICK'S</span>
+                            <span className="fs-5 emakicks-mobile" style={{ color: '#0a3d62' }}>EMAKICK'S STORE</span>
                         </Navbar.Brand>
 
                         <Navbar.Toggle aria-controls="basic-navbar-nav" />

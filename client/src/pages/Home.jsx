@@ -5,6 +5,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { CartContext } from '../components/CartContext';
 import { formatPrice } from '../utils/formater';
+import { FaWhatsapp } from "react-icons/fa";
 
 const API_BASE_URL = `${import.meta.env.VITE_API_URL}/api/products`;
 const BASE_IMAGE_URL = `${import.meta.env.VITE_API_URL}/imagenes/`;
@@ -131,14 +132,12 @@ const Home = () => {
                                     <Card.Body>
                                         <Card.Title>{prod.fabricante_nombre} - {prod.descripcion}</Card.Title>
                                         <Card.Text className="mt-auto">
-                                            {prod.is_on_offer === 1 ? (
+                                            {prod.is_on_offer === true ? (
                                                 <>
-                                                    <span className="text-muted text-decoration-line-through">
-                                                        {formatPrice(prod.precio_doc)}
-                                                    </span>
-                                                    <strong className="text-danger ms-2">
+                                                    <strong className="text-danger ms">
                                                         {formatPrice(prod.precio_oferta)}
                                                     </strong>
+                                                    <span className='text-primary ms-2'>Por Unidad</span>
                                                 </>
                                             ) : (
                                                 <strong>{formatPrice(prod.precio_doc)}</strong>
@@ -150,7 +149,16 @@ const Home = () => {
                             </Col>
                         ))}
                     </Row>
+                    <a
+                        href="https://wa.me/5491150511072" // replace with your number in international format
+                        className="whatsapp-float"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        <FaWhatsapp size={40} />
+                    </a>
                 </div>
+                
             )}
             
             <Modal show={showModal} onHide={handleCloseModal}>

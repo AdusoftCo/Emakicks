@@ -293,7 +293,7 @@ const CrudProducts = () => {
         <Container className="my-5">
             <h1 className="mb-4 text-center">Admin de Productos</h1>
             <div className="d-flex justify-content-end mb-4">
-                <Button style={{ backgroundColor: '#5728b7', color: 'white', borderRadius: '15px' }} onClick={() => openModal(null)}>
+                <Button className='btn-rounded' style={{ backgroundColor: '#5728b7', color: 'white'}} onClick={() => openModal(null)}>
                     Crear Nuevo Producto
                 </Button>
             </div>
@@ -311,13 +311,14 @@ const CrudProducts = () => {
                         <div className="product-field"><strong>Código:</strong> {product.cod_art}</div>
                         <div className="product-field"><strong>Descripción:</strong> {product.descripcion}</div>
                         <div className="product-field"><strong>Fabricante:</strong> {product.fabricante_nombre}</div>
-                        <div className="product-field"><strong>Precio Oferta:</strong> {formatPrice(product.precio_doc)}</div>
+                        <div className="product-field"><strong>Precio Docena:</strong> {formatPrice(product.precio_doc)}</div>
+                        <div className="product-field"><strong>Precio Oferta:</strong> {formatPrice(product.precio_oferta)}</div>
                         <div className="product-field"><strong>En Oferta:</strong> {product.is_on_offer ? "Sí" : "No"}</div>
                         <div className="product-actions">
-                            <Button variant="warning" size="sm" onClick={() => openModal(product)} className="me-2">
+                            <Button variant="warning" size="sm" onClick={() => openModal(product)} className="btn-rounded me-2">
                                     Editar
                             </Button>
-                            <Button variant="danger" size="sm" onClick={() => handleDelete(product.id)}>
+                            <Button variant="danger" size="sm" onClick={() => handleDelete(product.id)} className='btn-rounded'>
                                     Eliminar
                             </Button>
                         </div>
@@ -368,10 +369,10 @@ const CrudProducts = () => {
                                 </td>
                                 <td>{product.is_on_offer ? 'Sí' : 'No'}</td>
                                 <td>
-                                    <Button variant="warning" size="sm" onClick={() => openModal(product)} className="me-2">
+                                    <Button variant="warning" size="sm" onClick={() => openModal(product)} className="btn-rounded me-2">
                                         Editar
                                     </Button>
-                                    <Button variant="danger" size="sm" onClick={() => handleDelete(product.id)}>
+                                    <Button variant="danger" size="sm" onClick={() => handleDelete(product.id)} className='btn-rounded'>
                                         Eliminar
                                     </Button>
                                 </td>
@@ -491,10 +492,10 @@ const CrudProducts = () => {
                             />
                         </Form.Group>
                         <div className="d-flex justify-content-end">
-                            <Button variant="secondary" onClick={closeModal} className="me-2">
+                            <Button variant="secondary" onClick={closeModal} className="btn-rounded me-2">
                                 Cancelar
                             </Button>
-                            <Button variant="primary" type="submit" disabled={loading}>
+                            <Button variant="primary" type="submit" disabled={loading} className='btn-rounded'>
                                 {loading ? 'Guardando...' : (isEditing ? 'Actualizar Producto' : 'Crear Producto')}
                             </Button>
                         </div>

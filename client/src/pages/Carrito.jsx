@@ -177,13 +177,13 @@ const Carrito = () => {
                                         </Col>
                                         <Col xs={12} sm={3} className="mt-3 mt-sm-0 text-center text-sm-start">
                                             <div className="d-flex align-items-center justify-content-center justify-content-sm-start">
-                                                <Button variant="outline-secondary" size="sm" onClick={() => disminuirCantidad(item)}>-</Button>
+                                                <Button variant="outline-secondary" size="sm" onClick={() => disminuirCantidad(item)} className='btn-rounded'>-</Button>
                                                 <span className="mx-2">{item.quantity}</span>
-                                                <Button variant="outline-secondary" size="sm" onClick={() => aumentarCantidad(item)}>+</Button>
+                                                <Button variant="outline-secondary" size="sm" onClick={() => aumentarCantidad(item)} className='btn-rounded'>+</Button>
                                             </div>
                                         </Col>
                                         <Col xs={12} sm={2} className="mt-3 mt-sm-0 text-center text-sm-end">
-                                            <Button variant="danger" size="sm" onClick={() => eliminarDelCarrito(item)}>Eliminar</Button>
+                                            <Button variant="danger" size="sm" onClick={() => eliminarDelCarrito(item)} className='btn-rounded'>Eliminar</Button>
                                         </Col>
                                     </Row>
                                 </li>
@@ -192,7 +192,7 @@ const Carrito = () => {
                     )}
                     {carrito.length > 0 && (
                         <div className="text-center my-4">
-                            <Button variant="outline-danger" onClick={vaciarCarrito}>Vaciar Carrito</Button>
+                            <Button variant="outline-danger" onClick={vaciarCarrito} className='btn-rounded'>Vaciar Carrito</Button>
                         </div>
                     )}
                 </Col>
@@ -249,7 +249,7 @@ const Carrito = () => {
                                     {paymentDetails[customerInfo.paymentMethod]?.info}
                                 </Card>
                                 <Button
-                                    className="w-100"
+                                    className="w-100 btn-rounded"
                                     onClick={handleFinalCheckout}
                                     style={{ backgroundColor: '#5728b7', color: 'white', borderRadius: '5px' }}
                                     disabled={!customerInfo.name || !customerInfo.email}
@@ -276,7 +276,7 @@ const Carrito = () => {
                                                 <Form.Label>Código Postal</Form.Label>
                                                 <Form.Control type="text" value={zipCode} onChange={(e) => setZipCode(e.target.value)} />
                                             </Form.Group>
-                                            <Button onClick={handleCalculateShipping} className="w-100" disabled={loading}>
+                                            <Button onClick={handleCalculateShipping} className="w-100 btn-rounded" disabled={loading}>
                                                 {loading ? <Spinner animation="border" size="sm" /> : 'Calcular envío'}
                                             </Button>
                                             {shippingOptions.length > 0 && (
@@ -305,9 +305,9 @@ const Carrito = () => {
                                     )}
                                 </Form>
                                 <Button
-                                    className="w-100"
+                                    className="w-100 btn-rounded"
                                     onClick={handleProceedToPayment}
-                                    style={{ backgroundColor: '#5728b7', color: 'white', borderRadius: '5px' }}
+                                    style={{ backgroundColor: '#5728b7', color: 'white'}}
                                     disabled={carrito.length === 0 || (deliveryOption === 'delivery' && selectedShippingOptionIndex === null)}
                                 >
                                     Continuar con el pago
