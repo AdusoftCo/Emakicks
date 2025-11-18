@@ -136,36 +136,46 @@ const CrudProducts = () => {
     }, []);
 
     const openModal = async (product = null) => {
-        await fetchManufacturers(); // ✅ Ensure dropdown is ready
-
+        await fetchManufacturers();
+      
         if (product) {
-            
-            const safeVariaciones = Array.isArray(product.variaciones) ? product.variaciones : [];
-            setSelectedProduct(product);
-            setFormData({
-                ...product,
-                fabricante_id: String(product.fabricante_id),
-                is_on_offer: product.is_on_offer === true,
-                variaciones: JSON.stringify(safeVariaciones, null, 2),
-            });
-            setImagePreviewUrl(`${BASE_IMAGE_URL}${product.imagen}`);
-            setIsEditing(true); // ✅ Set editing mode
+          const safeVariaciones = Array.isArray(product.variaciones) ? product.variaciones : [];
+      
+          // If backend sends fabricante_id, use it directly
+          let fabricanteId = product.fabricante_id;
+      
+          // If backend only sends fabricante_nombre, look up the id
+          if (!fabricanteId && product.fabricante_nombre) {
+            const found = manufacturers.find(m => m.nombre === product.fabricante_nombre);
+            fabricanteId = found ? found.id : "";
+          }
+      
+          setSelectedProduct(product);
+          setFormData({
+            ...product,
+            fabricante_id: fabricanteId ? String(fabricanteId) : "",
+            is_on_offer: product.is_on_offer === true,
+            variaciones: JSON.stringify(safeVariaciones, null, 2),
+          });
+          setImagePreviewUrl(`${BASE_IMAGE_URL}${product.imagen}`);
+          setIsEditing(true);
         } else {
+          // reset for create mode
           setSelectedProduct(null);
           setFormData({
-            descripcion: '',
-            cod_art: '',
-            precio_doc: '',
-            precio_oferta: '',
-            costo: '',
-            fabricante_id: '',
+            descripcion: "",
+            cod_art: "",
+            precio_doc: "",
+            precio_oferta: "",
+            costo: "",
+            fabricante_id: "",
             is_on_offer: false,
-            imagen_base64: '',
-            imagen_nombre: '',
-            variaciones: '[]',
+            imagen_base64: "",
+            imagen_nombre: "",
+            variaciones: "[]",
           });
-          setImagePreviewUrl('');
-          setIsEditing(false); // ✅ Set creation mode
+          setImagePreviewUrl("");
+          setIsEditing(false);
         }
       
         setIsModalOpen(true);
