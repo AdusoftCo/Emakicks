@@ -150,7 +150,7 @@ const Home = () => {
                         ))}
                     </Row>
                     <a
-                        href="https://wa.me/5491150511072" // replace with your number in international format
+                        href="https://wa.me/5491150511072"
                         className="whatsapp-float"
                         target="_blank"
                         rel="noopener noreferrer"

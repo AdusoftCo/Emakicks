@@ -1,10 +1,11 @@
 // Carrito.jsx
 import React, { useContext, useState } from 'react';
+import axios from 'axios';
 import { Container, Button, Row, Col, Form, Spinner, Card } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { CartContext } from '../components/CartContext';
 import { formatPrice } from '../utils/formater';
-
+import CuErre from '../assets/0001.png';
 const BASE_IMAGE_URL = `${import.meta.env.VITE_API_URL}/imagenes/`;
 
 const Carrito = () => {
@@ -35,9 +36,9 @@ const Carrito = () => {
             title: 'Datos para Transferencia Bancaria',
             info: (
                 <>
-                    <p>CBU: 1234567890123456789012</p>
-                    <p>Alias: TU.ALIAS.MP</p>
-                    <p>Titular: Tu Nombre Completo</p>
+                    <p>CVU: 0000003100086344854008</p>
+                    <p>Alias: emanuel.ximena</p>
+                    <p>Titular: Jane Fernandez Daga</p>
                 </>
             ),
         },
@@ -45,9 +46,9 @@ const Carrito = () => {
             title: 'Datos para Mercado Pago',
             info: (
                 <>
-                    <p>Alias: TU.ALIAS.MP</p>
+                    <p>Alias: emanuel.ximena</p>
                     <p>Código QR: Escanear en la app</p>
-                    <img src="https://placehold.co/150x150/EAEAEA/333333?text=QR+MP" alt="QR Code" className="img-fluid my-2" />
+                    <img src={CuErre} alt="QR Code" className="img-fluid my-2" />
                 </>
             ),
         },
@@ -112,7 +113,7 @@ const Carrito = () => {
         setCustomerInfo(prev => ({ ...prev, [name]: value }));
     };
 
-    const handleFinalCheckout = () => {
+    const handleFinalCheckout = async () => {
         const selectedShippingOption = shippingOptions[selectedShippingOptionIndex];
 
         const orderSummary = carrito.map(item =>
@@ -147,6 +148,17 @@ const Carrito = () => {
         const whatsappUrl = `https://wa.me/${sellerPhoneNumber}?text=${encodeURIComponent(whatsappMessage)}`;
         
         window.open(whatsappUrl, '_blank');
+
+        // Call backend to decrement stock
+    try {
+        await axios.post(`${import.meta.env.VITE_API_URL}/api/purchase`, {
+        carrito
+        });
+        console.log("Stock decremented successfully");
+    } catch (err) {
+        console.error("Error updating stock:", err);
+        alert("Error al actualizar stock en el servidor");
+    }
         
         vaciarCarrito();
         setShowPaymentForm(false);
@@ -165,7 +177,7 @@ const Carrito = () => {
                                 <li key={getItemKey(item)} className="mb-4 p-3 border rounded">
                                     <Row className="align-items-center">
                                         <Col xs={3} sm={2}>
-                                            <img src={`${BASE_IMAGE_URL}${item.imagen_doc}`} alt={item.descripcion} className="img-fluid rounded" />
+                                            <img src={`${BASE_IMAGE_URL}${item.imagen}`} alt={item.descripcion} className="img-fluid rounded" />
                                         </Col>
                                         <Col xs={9} sm={5}>
                                             <div className="d-flex flex-column">
@@ -250,8 +262,8 @@ const Carrito = () => {
                                 </Card>
                                 <Button
                                     className="w-100 btn-rounded"
+                                    style={{ backgroundColor: '#5728b7', color: 'white'}}
                                     onClick={handleFinalCheckout}
-                                    style={{ backgroundColor: '#5728b7', color: 'white', borderRadius: '5px' }}
                                     disabled={!customerInfo.name || !customerInfo.email}
                                 >
                                     Enviar Pedido por WhatsApp
@@ -276,7 +288,8 @@ const Carrito = () => {
                                                 <Form.Label>Código Postal</Form.Label>
                                                 <Form.Control type="text" value={zipCode} onChange={(e) => setZipCode(e.target.value)} />
                                             </Form.Group>
-                                            <Button onClick={handleCalculateShipping} className="w-100 btn-rounded" disabled={loading}>
+                                            <Button onClick={handleCalculateShipping} className="w-100" disabled={loading}
+                                                style={{ backgroundColor: '#5728b7', color: 'white', borderRadius: '15px'}}>
                                                 {loading ? <Spinner animation="border" size="sm" /> : 'Calcular envío'}
                                             </Button>
                                             {shippingOptions.length > 0 && (

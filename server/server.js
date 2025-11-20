@@ -1,4 +1,6 @@
 // server.js
+import dotenv from 'dotenv';
+dotenv.config();
 
 import express from 'express';
 import axios from 'axios';
@@ -38,6 +40,54 @@ app.use('/imagenes', express.static(path.join(__dirname, 'imagenes')));
 
 app.listen(PORT, () => {
   console.log(`Servidor backend corriendo en http://localhost:${PORT}`);
+});
+
+// POST /api/purchase
+app.post("/api/purchase", async (req, res) => {
+  const { carrito } = req.body; // array of items
+
+  try {
+    await pool.query("BEGIN");
+
+    for (const item of carrito) {
+      if (item.color && item.talla) {
+        // decrement variation stock
+        const result = await pool.query(
+          `UPDATE proyecto.variaciones
+           SET stock = stock - $1
+           WHERE producto_id = $2 AND color = $3 AND talla = $4 AND stock >= $1
+           RETURNING *`,
+          [item.quantity, item.id, item.color, item.talla]
+        );
+        if (result.rowCount === 0) throw new Error("Not enough stock in variation");
+
+        // decrement product total stock
+        await pool.query(
+          `UPDATE proyecto.productos
+           SET stock = stock - $1
+           WHERE id = $2 AND stock >= $1`,
+          [item.quantity, item.id]
+        );
+      } else {
+        // decrement product stock directly
+        const result = await pool.query(
+          `UPDATE proyecto.productos
+           SET stock = stock - $1
+           WHERE id = $2 AND stock >= $1
+           RETURNING *`,
+          [item.quantity, item.id]
+        );
+        if (result.rowCount === 0) throw new Error("Not enough stock in product");
+      }
+    }
+
+    await pool.query("COMMIT");
+    res.json({ message: "Compra exitosa" });
+  } catch (err) {
+    await pool.query("ROLLBACK");
+    console.error(err);
+    res.status(400).json({ error: err.message });
+  }
 });
 
 // 🧱 SERVIR FRONTEND DESDE /dist

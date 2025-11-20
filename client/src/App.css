@@ -79,14 +79,10 @@
   gap: 1rem;
   margin-left: auto;           /* ensures they hug the right edge */
 }
-.cursive {
-  font-family: Verdana, Geneva, Tahoma, sans-serif;
-}
 
 .emakicks-mobile {
     color: black      !important;  /* Dark blue */
     font-weight: bolder;          /* Bolder */
-    font-family: cursive;       /* Keep cursive font */
 }
 .whatsapp-float {
   position: fixed;
