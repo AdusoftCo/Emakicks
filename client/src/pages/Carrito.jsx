@@ -157,7 +157,7 @@ const Carrito = () => {
         console.log("Stock decremented successfully");
     } catch (err) {
         console.error("Error updating stock:", err);
-        alert("Error al actualizar stock en el servidor");
+        alert("Error al actualizar stock en el servidor" + (err.response?.data?.error || err.message));
     }
         
         vaciarCarrito();
