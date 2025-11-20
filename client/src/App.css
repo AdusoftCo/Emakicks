@@ -79,7 +79,6 @@
   gap: 1rem;
   margin-left: auto;           /* ensures they hug the right edge */
 }
-
 .emakicks-mobile {
     color: black      !important;  /* Dark blue */
     font-weight: bolder;          /* Bolder */
