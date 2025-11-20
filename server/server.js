@@ -83,14 +83,16 @@ app.post("/api/purchase", async (req, res) => {
 
     await pool.query("COMMIT");
     res.json({ message: "Compra exitosa" });
-  } catch (err) {
-    await pool.query("ROLLBACK");
-    console.error(err);
-    res.status(400).json({ error: err.message });
-    console.error("Purchase error:", err);
-    res.status(400).json({ error: err.message, detail: err.stack });
-
-  }
+  }catch (err) {
+      await pool.query("ROLLBACK");
+      console.error("Purchase error:", err);
+    
+      res.status(400).json({
+        error: err.message,
+        detail: err.stack
+      });
+    }
+    
 });
 
 // 🧱 SERVIR FRONTEND DESDE /dist
