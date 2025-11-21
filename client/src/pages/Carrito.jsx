@@ -157,7 +157,7 @@ const Carrito = () => {
         console.log("Stock decremented successfully");
     } catch (err) {
         console.error("Error updating stock:", err);
-        alert("Error al actualizar stock en el servidor" + (err.response?.data?.error || err.message));
+        alert("Error al actualizar stock en el servidor");
     }
         
         vaciarCarrito();
@@ -261,8 +261,8 @@ const Carrito = () => {
                                     {paymentDetails[customerInfo.paymentMethod]?.info}
                                 </Card>
                                 <Button
-                                    className="w-100 btn-rounded"
-                                    style={{ backgroundColor: '#5728b7', color: 'white'}}
+                                    className="w-100"
+                                    style={{ backgroundColor: '#5728b7', color: 'white', height: '75px', fontSize: '22px', padding: '0 20px'}}
                                     onClick={handleFinalCheckout}
                                     disabled={!customerInfo.name || !customerInfo.email}
                                 >
@@ -288,7 +288,7 @@ const Carrito = () => {
                                                 <Form.Label>Código Postal</Form.Label>
                                                 <Form.Control type="text" value={zipCode} onChange={(e) => setZipCode(e.target.value)} />
                                             </Form.Group>
-                                            <Button onClick={handleCalculateShipping} className="w-100" disabled={loading}
+                                            <Button onClick={handleCalculateShipping} className="w-100 btn-rounded" disabled={loading}
                                                 style={{ backgroundColor: '#5728b7', color: 'white', borderRadius: '15px'}}>
                                                 {loading ? <Spinner animation="border" size="sm" /> : 'Calcular envío'}
                                             </Button>

@@ -18,6 +18,10 @@
 
 .btn-rounded {
   border-radius: 15px;
+  height: 60px; 
+  width:auto; 
+  padding: 0 20px; 
+  font-size: 24px;
 }
 
 /* Make hamburger icon black */

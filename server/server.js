@@ -16,7 +16,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-const PORT = process.env.PORT || 10000;
+const PORT = process.env.PORT || 3001;
 
 // Middleware
 app.use(compression()); // Enable gzip compression for responses
@@ -83,16 +83,15 @@ app.post("/api/purchase", async (req, res) => {
 
     await pool.query("COMMIT");
     res.json({ message: "Compra exitosa" });
-  }catch (err) {
-      await pool.query("ROLLBACK");
-      console.error("Purchase error:", err);
+  } catch (err) {
+    await pool.query("ROLLBACK");
+    console.error('Purch error', err);
     
-      res.status(400).json({
-        error: err.message,
-        detail: err.stack
-      });
-    }
-    
+    res.status(400).json({ 
+      error: err.message,
+      detail: err.stack 
+    });
+  }
 });
 
 // 🧱 SERVIR FRONTEND DESDE /dist
