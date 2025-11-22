@@ -12,6 +12,7 @@ import {
     Alert
 } from 'react-bootstrap';
 import { formatPrice } from '../utils/formater';
+import '../App.css';
 
 // Se carga el CSS de Bootstrap dinámicamente para evitar errores de compilación.
 const loadBootstrapCSS = () => {
@@ -303,7 +304,7 @@ const CrudProducts = () => {
         <Container className="my-5">
             <h1 className="mb-4 text-center">Admin de Productos</h1>
             <div className="d-flex justify-content-end mb-4">
-                <Button className='btn-rounded' style={{ backgroundColor: '#5728b7', color: 'white'}} onClick={() => openModal(null)}>
+                <Button className="btn-rounded" style={{ color: 'white'}} onClick={() => openModal(null)}>
                     Crear Nuevo Producto
                 </Button>
             </div>
@@ -325,10 +326,14 @@ const CrudProducts = () => {
                         <div className="product-field"><strong>Precio Oferta:</strong> {formatPrice(product.precio_oferta)}</div>
                         <div className="product-field"><strong>En Oferta:</strong> {product.is_on_offer ? "Sí" : "No"}</div>
                         <div className="product-actions">
-                            <Button variant="warning" size="sm" onClick={() => openModal(product)} className="btn-rounded me-2">
+                            <Button variant="warning" size="sm" 
+                                    onClick={() => openModal(product)} 
+                                    className="me-2"
+                                    style={{borderRadius: '15px', height: '50px', width: 'auto', padding: '0 20px', fontSize: '24px'}}>
                                     Editar
                             </Button>
-                            <Button variant="danger" size="sm" onClick={() => handleDelete(product.id)} className='btn-rounded'>
+                            <Button variant="danger" size="sm" onClick={() => handleDelete(product.id)}
+                                    style={{borderRadius: '15px', height: '50px', width: 'auto', padding: '0 20px', fontSize: '24px'}}>
                                     Eliminar
                             </Button>
                         </div>
@@ -379,10 +384,10 @@ const CrudProducts = () => {
                                 </td>
                                 <td>{product.is_on_offer ? 'Sí' : 'No'}</td>
                                 <td>
-                                    <Button variant="warning" size="sm" onClick={() => openModal(product)} className="btn-rounded me-2">
+                                    <Button variant="warning" size="sm" onClick={() => openModal(product)} className="me-2">
                                         Editar
                                     </Button>
-                                    <Button variant="danger" size="sm" onClick={() => handleDelete(product.id)} className='btn-rounded'>
+                                    <Button variant="danger" size="sm" onClick={() => handleDelete(product.id)}>
                                         Eliminar
                                     </Button>
                                 </td>

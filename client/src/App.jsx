@@ -10,7 +10,7 @@ import { CartProvider } from './components/CartContext';
 import { AuthProvider } from "./components/AuthContext";
 import Dashboard from "./pages/Dashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
-
+import './App.css';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 
 const ConditionalNavbar = () => {

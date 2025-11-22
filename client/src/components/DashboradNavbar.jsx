@@ -11,11 +11,12 @@ const DashboardNavbar = ({ userName, onLogout }) => {
                 <button
                     onClick={onLogout}
                     style={{
+                        height: '45px',
+                        width: 'auto',
                         backgroundColor: '#333333',
                         color: 'white',
-                        padding: '0.5rem 1rem',
-                        borderRadius: '1.75rem',
-                        border: 'none',
+                        padding: '0 20px',
+                        borderRadius: '15px',
                         cursor: 'pointer'
                     }}>
                     Log out
