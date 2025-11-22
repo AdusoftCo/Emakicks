@@ -35,7 +35,7 @@ const Navegacion = () => {
                             alt="Icono del Comercio"
                             style={{ width: '48px', height: '48px', marginRight: '15px' }}
                             />
-                            <span className="fs-5 emakicks-mobile" style={{ color: '#0a3d62' }}>EMAKICK'S STORE</span>
+                            <span className="fs-5 emakicks-mobile">EMAKICK'S STORE</span>
                         </Navbar.Brand>
 
                         <Navbar.Toggle aria-controls="basic-navbar-nav" />
@@ -66,17 +66,17 @@ const Navegacion = () => {
                 <Container className="navbar-padding-lg">
                 <Nav className="w-100 d-flex flex-column flex-lg-row align-items-center">
                     <div className="d-flex flex-column flex-lg-row">
-                    <Nav.Link as={Link} to="/" onClick={handleNavLinkClick} style={{ color: '#0a3d62' }}>Home</Nav.Link>
-                    <Nav.Link as={Link} to="/contacto" onClick={handleNavLinkClick} style={{ color: '#0a3d62' }}>Contacto</Nav.Link>
-                    <Nav.Link as={Link} to="/admin" onClick={handleNavLinkClick} style={{ color: '#0a3d62' }}>Admin</Nav.Link>
-                    <Nav.Link as={Link} to="/carrito" onClick={handleNavLinkClick} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <img src={carritoIcon} alt="Carrito" style={{ width: '32px', height: '32px', marginRight: '8px' }} />
-                        {totalItems > 0 && (
-                        <Badge pill bg="light" text="dark">
-                            {totalItems}
-                        </Badge>
-                        )}
-                    </Nav.Link>
+                        <Nav.Link as={Link} to="/" onClick={handleNavLinkClick} style={{ color: '#5728b7', fontSize: '22px' }}>Home</Nav.Link>
+                        <Nav.Link as={Link} to="/contacto" onClick={handleNavLinkClick} style={{ color: '#5728b7', fontSize: '22px' }}>Contacto</Nav.Link>
+                        <Nav.Link as={Link} to="/admin" onClick={handleNavLinkClick} style={{ color: '#5728b7',  fontSize: '22px' }}>Admin</Nav.Link>
+                        <Nav.Link as={Link} to="/carrito" onClick={handleNavLinkClick} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <img src={carritoIcon} alt="Carrito" style={{ width: '32px', height: '32px', marginRight: '8px' }} />
+                            {totalItems > 0 && (
+                            <Badge pill bg="light" text="dark">
+                                {totalItems}
+                            </Badge>
+                            )}
+                        </Nav.Link>
                     </div>
                 </Nav>
                 </Container>

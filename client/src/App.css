@@ -67,9 +67,9 @@
   margin-top: 1rem;
 }
 .dashboard-navbar {
-  display: flex;               /* 👈 make it flex on mobile too */
-  justify-content: flex-end;   /* push content to the right */
-  align-items: center;         /* vertical centering */
+  display: flex; /* 👈 make it flex on mobile too */
+  justify-content: center;
+  align-items: center; /* vertical centering */
   padding: 0.5rem 1rem;
   width: 100%;
   box-sizing: border-box;
@@ -84,8 +84,9 @@
   margin-left: auto;           /* ensures they hug the right edge */
 }
 .emakicks-mobile {
-    color: black      !important;  /* Dark blue */
-    font-weight: bolder;          /* Bolder */
+    color: #5728b7  !important;  /* Dark blue */
+    font-weight: 600;
+    font-style: italic;
 }
 .whatsapp-float {
   position: fixed;
@@ -111,6 +112,7 @@
 @media (min-width: 992px) {
   .dashboard-navbar {
     display: flex;
+    justify-content: center;
     align-items: center;
     padding: 1rem;
     width: 100%;

@@ -68,7 +68,7 @@ const Home = () => {
 
     const handleModalAddToCart = () => {
         if (!selectedProduct || !selectedVariations.color || !selectedVariations.talla || selectedVariations.quantity <= 0) {
-            alert("Please select a color, size, and a valid quantity.");
+            alert("Por favor seleccione color, tamaño y cantidad.");
             return;
         }
 
@@ -119,7 +119,7 @@ const Home = () => {
         <div className="container mt-4">
             {offers.length > 0 && (
                 <div className="mb-4">
-                    <h3 className="text-center mb-3">OFERTAS DEL MES</h3>
+                    <h3 className="text-center mb-3" style={{color: '#5728b7', fontSize: '32px'}}>OFERTAS DEL MES</h3>
                     <Row xs={1} md={2} lg={4} className="g-4">
                         {offers.map(prod => (
                             <Col key={prod.id}>
@@ -134,7 +134,7 @@ const Home = () => {
                                         <Card.Text className="mt-auto">
                                             {prod.is_on_offer === true ? (
                                                 <>
-                                                    <strong className="text-danger ms">
+                                                    <strong className="text-danger ms" style={{fontSize: '28px'}}>
                                                         {formatPrice(prod.precio_oferta)}
                                                     </strong>
                                                     <span className='text-primary ms-2'>Por Unidad</span>
@@ -143,7 +143,11 @@ const Home = () => {
                                                 <strong>{formatPrice(prod.precio_doc)}</strong>
                                             )}
                                         </Card.Text>
-                                        <Button style={{ backgroundColor: '#5728b7', color: 'white', borderRadius: '15px' }} onClick={() => handleShowModal(prod)}>Ver Producto</Button>
+                                        <Button className='btn-rounded' 
+                                            style={{ backgroundColor: '#5728b7', color: 'white', fontSize:'22px' }} 
+                                            onClick={() => handleShowModal(prod)}>
+                                                Ver Producto
+                                        </Button>
                                     </Card.Body>
                                 </Card>
                             </Col>
@@ -173,8 +177,8 @@ const Home = () => {
                     {selectedProduct && (
                         <>
                             <img loading="lazy" src={`${BASE_IMAGE_URL}${selectedProduct.imagen}`} alt={selectedProduct.descripcion} className="w-100 mb-3" style={{maxHeight: '400px', objectFit: 'contain'}} />
-                            <p><strong>Precio:</strong> {formatPrice(selectedProduct.is_on_offer === 1 ? selectedProduct.precio_oferta : selectedProduct.precio_doc)}</p>
-                            
+                            <p><strong>Unidad:</strong> {formatPrice(selectedProduct.precio_oferta)}</p>
+                            <p><strong>Docena:</strong> {formatPrice(selectedProduct.precio_doc)}</p>
                             <Form>
                                 <Form.Group className="mb-3">
                                     <Form.Label>Color</Form.Label>
@@ -227,10 +231,11 @@ const Home = () => {
                     )}
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="secondary" onClick={handleCloseModal}>
+                    <Button className='btn-rounded' variant="secondary" onClick={handleCloseModal}>
                         Cerrar
                     </Button>
                     <Button 
+                        className='btn-rounded'
                         style={{ backgroundColor: '#5728b7', color: 'white', borderRadius: '15px' }}
                         onClick={handleModalAddToCart}
                         disabled={!selectedVariations.color || !selectedVariations.talla || selectedVariations.quantity <= 0 || stock === 0}
