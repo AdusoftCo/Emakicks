@@ -19,9 +19,10 @@
 .btn-rounded {
   border-radius: 15px;
   height: 60px; 
-  width:auto; 
+  width: auto; 
   padding: 0 20px; 
   font-size: 26px;
+  background-color: #5728b7;
 }
 
 /* Make hamburger icon black */
@@ -111,26 +112,28 @@
 /* Desktop: Large screens and up (≥992px) */
 @media (min-width: 992px) {
   .dashboard-navbar {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 1rem;
-    width: 100%;
-    box-sizing: border-box;
-    background-color: white;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      display: flex;
+      justify-content: space-between; /* left + right groups balanced */
+      align-items: center;
+      padding: 0 7rem;                /* equal spacing on both sides */
   }
   
-  /* Right group */
   .dashboard-navbar .right-group {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
+    margin-left: 0 !important;
+    justify-content: center;
   }
   .navbar-padding-lg {
     padding-left: 7rem;
     padding-right: 7rem;
   }
+  .btn-rounded {
+    border-radius: 15px;
+    height: 60px; 
+    width: auto; 
+    padding: 0 20px; 
+    font-size: 22px;
+  }
+  
 }
 
 @keyframes logo-spin {

@@ -9,7 +9,10 @@ import {
     Table,
     Row,
     Col,
-    Alert
+    Alert,
+    FormGroup,
+    FormLabel,
+    FormSelect
 } from 'react-bootstrap';
 import { formatPrice } from '../utils/formater';
 import '../App.css';
@@ -61,6 +64,10 @@ const calculatePrices = (fabricante_id, costo) => {
             oferta = c28 / 12;
             break;
         }
+        case '29':
+            docena = costoNum * 1.25;
+            oferta = costoNum * 1.30;
+            break;
         default:
             docena = costoNum * 1.30;
             oferta = (costoNum / 12) * 1.53;
@@ -77,14 +84,17 @@ const CrudProducts = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const [formData, setFormData] = useState({
-        descripcion: '',
-        fabricante_id: '',
-        cod_art: '',
-        precio_doc: '',
-        precio_oferta: '',
-        costo: '',
+        descripcion: "",
+        cod_art: "",
+        precio_doc: "",
+        precio_oferta: "",
+        costo: "",
         is_on_offer: false,
-        variaciones: '',
+        fabricante_id: "",
+        imagen_nombre: "",
+        imagen_base64: "",
+        category: "",
+        variaciones: [],
     });
 
     const [imageFile, setImageFile] = useState(null);
@@ -140,46 +150,52 @@ const CrudProducts = () => {
         await fetchManufacturers();
       
         if (product) {
-          const safeVariaciones = Array.isArray(product.variaciones) ? product.variaciones : [];
-      
-          // If backend sends fabricante_id, use it directly
-          let fabricanteId = product.fabricante_id;
-      
-          // If backend only sends fabricante_nombre, look up the id
-          if (!fabricanteId && product.fabricante_nombre) {
-            const found = manufacturers.find(m => m.nombre === product.fabricante_nombre);
-            fabricanteId = found ? found.id : "";
-          }
-      
-          setSelectedProduct(product);
-          setFormData({
-            ...product,
-            fabricante_id: fabricanteId ? String(fabricanteId) : "",
-            is_on_offer: product.is_on_offer === true,
-            variaciones: JSON.stringify(safeVariaciones, null, 2),
-          });
-          setImagePreviewUrl(`${BASE_IMAGE_URL}${product.imagen}`);
-          setIsEditing(true);
-        } else {
-          // reset for create mode
-          setSelectedProduct(null);
-          setFormData({
-            descripcion: "",
-            cod_art: "",
-            precio_doc: "",
-            precio_oferta: "",
-            costo: "",
-            fabricante_id: "",
-            is_on_offer: false,
-            imagen_base64: "",
-            imagen_nombre: "",
-            variaciones: "[]",
-          });
-          setImagePreviewUrl("");
-          setIsEditing(false);
-        }
-      
-        setIsModalOpen(true);
+
+            const safeVariaciones = Array.isArray(product.variaciones) ? product.variaciones : [];
+        
+            // If backend sends fabricante_id, use it directly
+            let fabricanteId = product.fabricante_id;
+        
+            // If backend only sends fabricante_nombre, look up the id
+            if (!fabricanteId && product.fabricante_nombre) {
+                const found = manufacturers.find(m => m.nombre === product.fabricante_nombre);
+                fabricanteId = found ? found.id : "";
+            }
+        
+            setSelectedProduct(product);
+            
+            setFormData({
+                ...product,
+                fabricante_id: fabricanteId ? String(fabricanteId) : "",
+                is_on_offer: product.is_on_offer === true,
+                variaciones: safeVariaciones, // ✅ keep as array
+              });
+              
+            
+            setImagePreviewUrl(`${BASE_IMAGE_URL}${product.imagen}`);
+            setIsEditing(true);
+            
+            } else {
+                // reset for create mode
+                setSelectedProduct(null);
+                setFormData({
+                    descripcion: "",
+                    cod_art: "",
+                    precio_doc: "",
+                    precio_oferta: "",
+                    costo: "",
+                    fabricante_id: "",
+                    is_on_offer: false,
+                    imagen_base64: "",
+                    imagen_nombre: "",
+                    variaciones: [],
+                });
+
+            setImagePreviewUrl("");
+            setIsEditing(false);
+            }
+        
+            setIsModalOpen(true);
       };
       
     // Close Modal
@@ -387,7 +403,7 @@ const CrudProducts = () => {
                                     <Button variant="warning" size="sm" onClick={() => openModal(product)} className="me-2">
                                         Editar
                                     </Button>
-                                    <Button variant="danger" size="sm" onClick={() => handleDelete(product.id)}>
+                                    <Button variant="danger" size="sm" onClick={() => handleDelete(product.id)} >
                                         Eliminar
                                     </Button>
                                 </td>
@@ -493,19 +509,67 @@ const CrudProducts = () => {
                                         onChange={handleInputChange}
                                     />
                                 </Form.Group>
+                                    
+                                <FormGroup controlId="category" className='mb-3'>
+                                    <FormLabel>Categoria</FormLabel>
+                                    <FormSelect
+                                        value={formData.category}
+                                        onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                                        required
+                                    >
+                                        <option value="">-- Select Categoria --</option>
+                                        <option value="femeninterior">femenInterior</option>
+                                        <option value="medias">medias</option>
+                                        <option value="camisonetas">camisonetas</option>
+                                        <option value="masculinos">masculinos</option>
+                                    </FormSelect>
+                                </FormGroup>
                             </Col>
                         </Row>
                         <Form.Group className="mb-3">
                             <Form.Label>Variaciones (JSON)</Form.Label>
-                            <Form.Control
-                                as="textarea"
-                                name="variaciones"
-                                value={formData.variaciones}
-                                onChange={handleInputChange}
-                                rows={5}
-                                placeholder='Ej: [{"color":"Rojo","talla":"M","stock":10}]'
-                            />
+                            {formData.variaciones.map((v, index) => (
+                                <div key={index} className="mb-2">
+                                    <Form.Control
+                                    type="text"
+                                    placeholder="Color"
+                                    value={v.color}
+                                    onChange={(e) => {
+                                        const newVars = [...formData.variaciones];
+                                        newVars[index].color = e.target.value;
+                                        setFormData({ ...formData, variaciones: newVars });
+                                    }}
+                                    />
+                                    <Form.Control
+                                    type="text"
+                                    placeholder="Talla"
+                                    value={v.talla}
+                                    onChange={(e) => {
+                                        const newVars = [...formData.variaciones];
+                                        newVars[index].talla = e.target.value;
+                                        setFormData({ ...formData, variaciones: newVars });
+                                    }}
+                                    />
+                                    <Form.Control
+                                    type="number"
+                                    placeholder="Stock"
+                                    value={v.stock}
+                                    onChange={(e) => {
+                                        const newVars = [...formData.variaciones];
+                                        newVars[index].stock = parseInt(e.target.value, 10);
+                                        setFormData({ ...formData, variaciones: newVars });
+                                    }}
+                                    />
+                                </div>
+                                ))}
+
+                                <Button onClick={() =>
+                                setFormData({ ...formData, variaciones: [...formData.variaciones, { color: "", talla: "", stock: 0 }] })
+                                }>
+                                Add Variation
+                                </Button>
                         </Form.Group>
+
                         <div className="d-flex justify-content-end">
                             <Button variant="secondary" onClick={closeModal} className="btn-rounded me-2">
                                 Cancelar

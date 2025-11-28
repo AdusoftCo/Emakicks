@@ -86,7 +86,8 @@ router.post('/', async (req, res) => {
       fabricante_id,
       variaciones,
       imagen_base64,
-      imagen_nombre
+      imagen_nombre,
+      category
     } = req.body;
 
     // Save image to /imagenes folder asynchronously
@@ -99,9 +100,9 @@ router.post('/', async (req, res) => {
 
     // Insert product
     const result = await pool.query(
-      `INSERT INTO productos (descripcion, cod_art, precio_doc, precio_oferta, costo, is_on_offer, id_prov, imagen)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING id`,
-      [descripcion, cod_art, precio_doc, precio_oferta, costo, is_on_offer, fabricante_id, imagen_nombre]
+      `INSERT INTO productos (descripcion, cod_art, precio_doc, precio_oferta, costo, is_on_offer, id_prov, imagen, category)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING id`,
+      [descripcion, cod_art, precio_doc, precio_oferta, costo, is_on_offer, fabricante_id, imagen_nombre, category]
     );
 
     const productoId = result.rows[0].id;

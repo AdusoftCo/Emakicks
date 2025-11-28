@@ -174,7 +174,7 @@ const Carrito = () => {
                     ) : (
                         <ul className="list-unstyled">
                             {carrito.map((item) => (
-                                <li key={getItemKey(item)} className="mb-4 p-3 border rounded">
+                                <li key={getItemKey(item)} className="mb-4 p-3 border">
                                     <Row className="align-items-center">
                                         <Col xs={3} sm={2}>
                                             <img src={`${BASE_IMAGE_URL}${item.imagen}`} alt={item.descripcion} className="img-fluid rounded" />
@@ -189,13 +189,13 @@ const Carrito = () => {
                                         </Col>
                                         <Col xs={12} sm={3} className="mt-3 mt-sm-0 text-center text-sm-start">
                                             <div className="d-flex align-items-center justify-content-center justify-content-sm-start">
-                                                <Button variant="outline-secondary" size="sm" onClick={() => disminuirCantidad(item)} className='btn-rounded'>-</Button>
-                                                <span className="mx-2">{item.quantity}</span>
-                                                <Button variant="outline-secondary" size="sm" onClick={() => aumentarCantidad(item)} className='btn-rounded'>+</Button>
+                                                <Button variant="outline-secondary" size="sm" onClick={() => disminuirCantidad(item)} style={{borderRadius: '15px'}}>-</Button>
+                                                    <span className="mx-2">{item.quantity}</span>
+                                                <Button variant="outline-secondary" size="sm" onClick={() => aumentarCantidad(item)} style={{borderRadius: '15px'}}>+</Button>
                                             </div>
                                         </Col>
                                         <Col xs={12} sm={2} className="mt-3 mt-sm-0 text-center text-sm-end">
-                                            <Button variant="danger" size="sm" onClick={() => eliminarDelCarrito(item)} className='btn-rounded'>Eliminar</Button>
+                                            <Button variant="danger" size="sm" onClick={() => eliminarDelCarrito(item)} style={{borderRadius: '15px'}}>Eliminar</Button>
                                         </Col>
                                     </Row>
                                 </li>
@@ -204,7 +204,7 @@ const Carrito = () => {
                     )}
                     {carrito.length > 0 && (
                         <div className="text-center my-4">
-                            <Button variant="outline-danger" onClick={vaciarCarrito} className='btn-rounded'>Vaciar Carrito</Button>
+                            <Button variant="outline-danger" onClick={vaciarCarrito} style={{borderRadius: '15px'}}>Vaciar Carrito</Button>
                         </div>
                     )}
                 </Col>
