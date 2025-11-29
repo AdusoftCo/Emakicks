@@ -122,7 +122,7 @@ router.post('/', async (req, res) => {
   }
 });
 
-// Update
+// Update product
 router.put('/', async (req, res) => {
   try {
     const {
@@ -136,41 +136,48 @@ router.put('/', async (req, res) => {
       fabricante_id,
       variaciones,
       imagen_base64,
-      imagen_nombre
+      category
     } = req.body;
+
     console.log('Received is_on_offer:', is_on_offer);
 
-    // 🔽 INSERT THIS RIGHT HERE
-    let finalImageName = imagen_nombre;
-
-    if (!imagen_nombre) {
-      const current = await pool.query('SELECT imagen FROM productos WHERE id = $1', [id]);
-      finalImageName = current.rows[0]?.imagen || null;
+    // Convert base64 to buffer if provided
+    let imageBuffer = null;
+    if (imagen_base64) {
+      const base64Data = imagen_base64.replace(/^data:image\/\w+;base64,/, '');
+      imageBuffer = Buffer.from(base64Data, 'base64');
     }
 
-    // Optional: update image if new one is provided asynchronously
-    if (imagen_base64 && imagen_nombre) {
-      try {
-        const base64Data = imagen_base64.replace(/^data:image\/\w+;base64,/, '');
-        const buffer = Buffer.from(base64Data, 'base64');
-        const imagePath = path.join(__dirname, '..', 'imagenes', imagen_nombre);
-        await fs.promises.writeFile(imagePath, buffer);
-        console.log('Image saved to:', imagePath);
-      } catch (err) {
-        console.error('Image save error:', err.message);
-      }
-    }
-
-    console.log('Updating product with:', {
-      id, fabricante_id, tipo: typeof fabricante_id
-    });
-
-    // ✅ Use finalImageName in your UPDATE query
-    await pool.query(
-      `UPDATE productos SET descripcion=$1, cod_art=$2, precio_doc=$3, precio_oferta=$4, costo=$5, is_on_offer=$6, id_prov=$7, imagen=$8 WHERE id=$9`,
-      [descripcion, cod_art, precio_doc, precio_oferta, costo, is_on_offer, fabricante_id, finalImageName, id]
+    // Update query
+    const result = await pool.query(
+      `UPDATE productos
+       SET descripcion=$1,
+           cod_art=$2,
+           precio_doc=$3,
+           precio_oferta=$4,
+           costo=$5,
+           is_on_offer=$6,
+           id_prov=$7,
+           imagen=$8,
+           category=$9
+       WHERE id=$10
+       RETURNING *`,
+      [
+        descripcion,
+        cod_art,
+        precio_doc,
+        precio_oferta,
+        costo,
+        is_on_offer,
+        fabricante_id,
+        imageBuffer,   // 🔽 store binary directly in DB
+        category,
+        id
+      ]
     );
 
+    res.json(result.rows[0]);
+  
     // ✅ Parse variaciones safely
     const parsedVariaciones = Array.isArray(variaciones)
       ? variaciones

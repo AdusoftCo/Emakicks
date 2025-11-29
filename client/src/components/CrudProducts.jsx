@@ -91,7 +91,6 @@ const CrudProducts = () => {
         costo: "",
         is_on_offer: false,
         fabricante_id: "",
-        imagen_nombre: "",
         imagen_base64: "",
         category: "",
         variaciones: [],
@@ -103,7 +102,7 @@ const CrudProducts = () => {
     const [error, setError] = useState('');
 
     const API_BASE_URL = `${import.meta.env.VITE_API_URL}/api/products`;
-    const BASE_IMAGE_URL = `${import.meta.env.VITE_API_URL}/imagenes/`;
+    // const BASE_IMAGE_URL = `${import.meta.env.VITE_API_URL}/imagenes/`;
     
     useEffect(() => {
         const cleanup = loadBootstrapCSS();
@@ -237,14 +236,15 @@ const CrudProducts = () => {
     // Handle file input change and create a preview URL
     const handleFileChange = (e) => {
         const file = e.target.files[0];
-        if (file) {
-            setImageFile(file);
-            setImagePreviewUrl(URL.createObjectURL(file));
-        } else {
-            setImageFile(null);
-            setImagePreviewUrl('');
-        }
-    };
+        setImageFile(file);
+      
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setFormData(prev => ({ ...prev, imagen_base64: reader.result }));
+          setImagePreviewUrl(reader.result); // preview in modal
+        };
+        reader.readAsDataURL(file);
+      };
 
     // Handle form submission (Create or Update)
     const handleSubmit = async (e) => {
@@ -334,7 +334,22 @@ const CrudProducts = () => {
                 products.length > 0 ? (
                     products.map(product => (
                     <div className="product-record" key={product.id}>
-                        <img src={`${BASE_IMAGE_URL}${product.imagen}`} alt={product.descripcion} className="product-image" />
+                        {product.imagen_base64 ? (
+                            <img
+                                src={`data:image/jpeg;base64,${product.imagen_base64}`}
+                                alt={product.descripcion}
+                                style={{ width: '64px', height: '64px', objectFit: 'cover' }}
+                                onError={(e) => {
+                                e.target.src = 'https://placehold.co/64x64/E2E8F0/A0AEC0?text=No+Img';
+                                }}
+                            />
+                            ) : (
+                            <img
+                                src="https://placehold.co/64x64/E2E8F0/A0AEC0?text=No+Img"
+                                alt="No image"
+                                style={{ width: '64px', height: '64px', objectFit: 'cover' }}
+                            />
+                            )}
                         <div className="product-field"><strong>Código:</strong> {product.cod_art}</div>
                         <div className="product-field"><strong>Descripción:</strong> {product.descripcion}</div>
                         <div className="product-field"><strong>Fabricante:</strong> {product.fabricante_nombre}</div>
@@ -379,12 +394,22 @@ const CrudProducts = () => {
                             <tr key={product.id}>
                                 <td>{product.cod_art}</td>
                                 <td>
+                                {product.imagen_base64 ? (
                                     <img
-                                        src={`${BASE_IMAGE_URL}${product.imagen}`}
+                                        src={`data:image/jpeg;base64,${product.imagen_base64}`}
                                         alt={product.descripcion}
                                         style={{ width: '64px', height: '64px', objectFit: 'cover' }}
-                                        onError={(e) => { e.target.src = 'https://placehold.co/64x64/E2E8F0/A0AEC0?text=No+Img'; }}
+                                        onError={(e) => {
+                                        e.target.src = 'https://placehold.co/64x64/E2E8F0/A0AEC0?text=No+Img';
+                                        }}
                                     />
+                                    ) : (
+                                    <img
+                                        src="https://placehold.co/64x64/E2E8F0/A0AEC0?text=No+Img"
+                                        alt="No image"
+                                        style={{ width: '64px', height: '64px', objectFit: 'cover' }}
+                                    />
+                                    )}
                                 </td>
                                 <td>{product.descripcion}</td>
                                 <td>{product.fabricante_nombre}</td>
