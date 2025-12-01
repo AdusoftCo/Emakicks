@@ -41,6 +41,8 @@ app.use(cors({
   credentials: true
 }));
 
+app.options('*', cors()); // handle preflight
+
 app.get('/api/test-db', async (req, res) => {
   try {
     const result = await pool.query('SELECT NOW()');

@@ -180,7 +180,17 @@ const Home = () => {
                 <Modal.Body>
                     {selectedProduct && (
                         <>
-                            <img loading="lazy" src={`${BASE_IMAGE_URL}${selectedProduct.imagen}`} alt={selectedProduct.descripcion} className="w-100 mb-3" style={{maxHeight: '400px', objectFit: 'contain'}} />
+                            <img 
+                                loading="lazy" 
+                                src={
+                                    selectedProduct.imagen_base64
+                                      ? `data:image/jpeg;base64,${selectedProduct.imagen_base64}`
+                                      : "https://placehold.co/400x400/E2E8F0/A0AEC0?text=No+Img"
+                                  }
+                                alt={selectedProduct.descripcion} 
+                                className="w-100 mb-3" 
+                                style={{maxHeight: '400px', objectFit: 'contain'}} 
+                            />
                             <p><strong>Unidad:</strong> {formatPrice(selectedProduct.precio_oferta)}</p>
                             <p><strong>Docena:</strong> {formatPrice(selectedProduct.precio_doc)}</p>
                             <Form>

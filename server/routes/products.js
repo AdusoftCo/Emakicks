@@ -136,8 +136,6 @@ router.put('/', async (req, res) => {
       category
     } = req.body;
 
-    console.log('Received is_on_offer:', is_on_offer);
-
     // Convert base64 to buffer if provided
     let imageBuffer = null;
     if (imagen_base64) {
