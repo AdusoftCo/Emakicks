@@ -17,6 +17,7 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 3001;
+
 const allowedOrigins = [
   'https://emakicks-frontend.onrender.com', // your deployed frontend
   'http://localhost:5173'                   // local dev
@@ -24,15 +25,20 @@ const allowedOrigins = [
 // Middleware
 app.use(compression()); // Enable gzip compression for responses
 app.use(express.json({ limit: '20mb' }));
+
 app.use(cors({
   origin: function (origin, callback) {
-    if (!origin) return callback(null, true); // allow curl/postman
+    // allow requests with no origin (like curl, mobile apps)
+    if (!origin) return callback(null, true);
+
     if (allowedOrigins.includes(origin)) {
       return callback(null, true);
     } else {
       return callback(new Error('Not allowed by CORS'));
     }
-  }
+  },
+  methods: ['GET','POST','PUT','DELETE'],
+  credentials: true
 }));
 
 app.get('/api/test-db', async (req, res) => {
@@ -106,14 +112,6 @@ app.post("/api/purchase", async (req, res) => {
   }
 });
 
-// 🧱 SERVIR FRONTEND DESDE /dist
-if (process.env.SERVE_FRONTEND === 'true') {
-  app.use(express.static(path.join(__dirname, '..', 'client', 'dist')));
-
-  app.get(/^\/(?!api).*/, (req, res) => {
-    res.sendFile(path.join(__dirname, '..', 'client', 'dist', 'index.html'));
-  });
-}
 
 // 🔐 CREDENCIALES (usa variables de entorno en producción)
 const CORREO_ARGENTINO_USER = process.env.CORREO_ARGENTINO_USER || 'Emakic';
