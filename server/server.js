@@ -17,11 +17,23 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 3001;
-
+const allowedOrigins = [
+  'https://emakicks-frontend.onrender.com', // your deployed frontend
+  'http://localhost:5173'                   // local dev
+];
 // Middleware
 app.use(compression()); // Enable gzip compression for responses
 app.use(express.json({ limit: '20mb' }));
-app.use(cors());
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true); // allow curl/postman
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    } else {
+      return callback(new Error('Not allowed by CORS'));
+    }
+  }
+}));
 
 app.get('/api/test-db', async (req, res) => {
   try {
