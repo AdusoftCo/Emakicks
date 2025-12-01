@@ -36,7 +36,7 @@ app.get('/api/test-db', async (req, res) => {
 // Rutas
 app.use('/api/products', productsRouter);
 
-app.use('/imagenes', express.static(path.join(__dirname, 'imagenes')));
+// app.use('/imagenes', express.static(path.join(__dirname, 'imagenes')));
 
 app.listen(PORT, () => {
   console.log(`Servidor backend corriendo en http://localhost:${PORT}`);

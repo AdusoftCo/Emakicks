@@ -52,7 +52,8 @@ router.get('/', async (req, res) => {
     const result = await pool.query(sql, params);
     const products = result.rows.map(row => ({
       ...row,
-      variaciones: row.variaciones || []
+      variaciones: row.variaciones || [],
+      imagen_base64: row.imagen ? Buffer.from(row.imagen).toString('base64') : null
     }));
 
     console.log(`Products fetched: ${products.length} (page ${page}, limit ${limit})`);
@@ -86,23 +87,19 @@ router.post('/', async (req, res) => {
       fabricante_id,
       variaciones,
       imagen_base64,
-      imagen_nombre,
       category
     } = req.body;
 
-    // Save image to /imagenes folder asynchronously
-    if (imagen_base64 && imagen_nombre) {
+    let imageBuffer = null;
+    if (imagen_base64) {
       const base64Data = imagen_base64.replace(/^data:image\/\w+;base64,/, '');
-      const buffer = Buffer.from(base64Data, 'base64');
-      const imagePath = path.join(__dirname, '..', 'imagenes', imagen_nombre);
-      await fs.promises.writeFile(imagePath, buffer);
+      imageBuffer = Buffer.from(base64Data, 'base64');
     }
 
-    // Insert product
     const result = await pool.query(
       `INSERT INTO productos (descripcion, cod_art, precio_doc, precio_oferta, costo, is_on_offer, id_prov, imagen, category)
        VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING id`,
-      [descripcion, cod_art, precio_doc, precio_oferta, costo, is_on_offer, fabricante_id, imagen_nombre, category]
+      [descripcion, cod_art, precio_doc, precio_oferta, costo, is_on_offer, fabricante_id, imageBuffer, category]
     );
 
     const productoId = result.rows[0].id;

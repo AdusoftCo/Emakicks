@@ -8,7 +8,6 @@ import { formatPrice } from '../utils/formater';
 import { FaWhatsapp } from "react-icons/fa";
 
 const API_BASE_URL = `${import.meta.env.VITE_API_URL}/api/products`;
-const BASE_IMAGE_URL = `${import.meta.env.VITE_API_URL}/imagenes/`;
 
 const Home = () => {
     const [offers, setOffers] = useState([]);
@@ -126,9 +125,14 @@ const Home = () => {
                                 <Card className="h-100">
                                     <Card.Img 
                                         variant="top" 
-                                        src={`${BASE_IMAGE_URL}${prod.imagen}`}
-                                        loading="lazy"
-                                        style={{ height: '250px', objectFit: 'contain' }} />
+                                        src={
+                                            prod.imagen_base64
+                                              ? `data:image/jpeg;base64,${prod.imagen_base64}`
+                                              : "https://placehold.co/250x250/E2E8F0/A0AEC0?text=No+Img"
+                                          }
+                                          loading="lazy"
+                                          style={{ height: '250px', objectFit: 'contain' }}
+                                    />
                                     <Card.Body>
                                         <Card.Title>{prod.fabricante_nombre} - {prod.descripcion}</Card.Title>
                                         <Card.Text className="mt-auto">

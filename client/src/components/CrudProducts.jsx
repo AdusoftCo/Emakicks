@@ -171,7 +171,12 @@ const CrudProducts = () => {
               });
               
             
-            setImagePreviewUrl(`${BASE_IMAGE_URL}${product.imagen}`);
+            setImagePreviewUrl(
+                product.imagen_base64
+                  ? `data:image/jpeg;base64,${product.imagen_base64}`
+                  : ""
+            );
+              
             setIsEditing(true);
             
             } else {
@@ -186,7 +191,6 @@ const CrudProducts = () => {
                     fabricante_id: "",
                     is_on_offer: false,
                     imagen_base64: "",
-                    imagen_nombre: "",
                     variaciones: [],
                 });
 
