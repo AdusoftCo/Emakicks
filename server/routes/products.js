@@ -171,8 +171,6 @@ router.put('/', async (req, res) => {
       ]
     );
 
-    res.json(result.rows[0]);
-  
     // ✅ Parse variaciones safely
     const parsedVariaciones = Array.isArray(variaciones)
       ? variaciones

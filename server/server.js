@@ -26,21 +26,10 @@ const allowedOrigins = [
 app.use(compression()); // Enable gzip compression for responses
 app.use(express.json({ limit: '20mb' }));
 
-app.use(cors({
-  origin: function (origin, callback) {
-    // allow requests with no origin (like curl, mobile apps)
-    if (!origin) return callback(null, true);
-
-    if (allowedOrigins.includes(origin)) {
-      return callback(null, true);
-    } else {
-      return callback(new Error('Not allowed by CORS'));
-    }
-  },
-  methods: ['GET','POST','PUT','DELETE'],
-  credentials: true
-}));
-
+app.use((req, res, next) => {
+  console.log(req.method, req.url, req.headers.origin);
+  next();
+});
 
 app.get('/api/test-db', async (req, res) => {
   try {
