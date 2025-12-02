@@ -26,6 +26,12 @@ const allowedOrigins = [
 app.use(compression()); // Enable gzip compression for responses
 app.use(express.json({ limit: '20mb' }));
 
+app.use(cors({
+  origin: allowedOrigins,
+  methods: ['GET','POST','PUT','DELETE'],
+  credentials: true
+}));
+
 app.use((req, res, next) => {
   console.log(req.method, req.url, req.headers.origin);
   next();
