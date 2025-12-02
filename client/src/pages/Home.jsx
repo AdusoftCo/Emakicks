@@ -6,10 +6,12 @@ import { useNavigate } from 'react-router-dom';
 import { CartContext } from '../components/CartContext';
 import { formatPrice } from '../utils/formater';
 import { FaWhatsapp } from "react-icons/fa";
+import SplashModal from '../components/SplashModal';
 
 const API_BASE_URL = `${import.meta.env.VITE_API_URL}/api/products`;
 
 const Home = () => {
+    const [showSplash, setShowSplash] = useState(true);
     const [offers, setOffers] = useState([]);
     
     const [selectedVariations, setSelectedVariations] = useState({
@@ -115,6 +117,10 @@ const Home = () => {
     const stock = getStockForSelection();
 
     return (
+        <>
+        {showSplash && <SplashModal onClose={() => setShowSplash(false)} />}
+        {!showSplash && <OffersScreen />}
+    
         <div className="container mt-4">
             {offers.length > 0 && (
                 <div className="mb-4">
@@ -259,7 +265,9 @@ const Home = () => {
                 </Modal.Footer>
             </Modal>
         </div>
+        </>
     );
+    
 };
 
 export default Home;
