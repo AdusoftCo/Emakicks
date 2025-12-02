@@ -259,6 +259,7 @@ const CrudProducts = () => {
         try {
           const data = {
             ...formData,
+            id: formData.id,
             variaciones: formData.variaciones,
             is_on_offer: formData.is_on_offer === true,
           };

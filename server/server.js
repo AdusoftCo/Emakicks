@@ -41,7 +41,7 @@ app.use(cors({
   credentials: true
 }));
 
-app.options(/.*/, cors());
+app.options('*', cors());
 
 app.get('/api/test-db', async (req, res) => {
   try {
