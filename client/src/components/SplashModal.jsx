@@ -48,7 +48,9 @@ const SplashModal = ({ onClose }) => {
         <Spinner animation="border" role="status" className="mb-3">
           <span className="visually-hidden">Cargando ...</span>
         </Spinner>
-        <p>FERIA DE OFERTAS …</p>
+        
+        <Modal.Title>FERIA DE OFERTAS …</Modal.Title>
+        
       </Modal.Body>
     </Modal>
   );

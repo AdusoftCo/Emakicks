@@ -83,6 +83,7 @@ router.post('/', async (req, res) => {
       precio_doc,
       precio_oferta,
       costo,
+      fecha_alta,
       is_on_offer,
       fabricante_id,
       variaciones,
@@ -97,8 +98,8 @@ router.post('/', async (req, res) => {
     }
 
     const result = await pool.query(
-      `INSERT INTO productos (descripcion, cod_art, precio_doc, precio_oferta, costo, is_on_offer, id_prov, imagen, category)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING id`,
+      `INSERT INTO productos (descripcion, cod_art, precio_doc, precio_oferta, costo, fecha_alta, is_on_offer, id_prov, imagen, category)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) RETURNING id`,
       [descripcion, cod_art, precio_doc, precio_oferta, costo, is_on_offer, fabricante_id, imageBuffer, category]
     );
 
@@ -129,6 +130,7 @@ router.put('/', async (req, res) => {
       precio_doc,
       precio_oferta,
       costo,
+      fecha_alta,
       is_on_offer,
       fabricante_id,
       variaciones,
@@ -151,11 +153,12 @@ router.put('/', async (req, res) => {
            precio_doc=$3,
            precio_oferta=$4,
            costo=$5,
-           is_on_offer=$6,
-           id_prov=$7,
-           imagen=$8,
-           category=$9
-       WHERE id=$10
+           fecha_alta=$6
+           is_on_offer=$7,
+           id_prov=$8,
+           imagen=$9,
+           category=$10
+       WHERE id=$11
        RETURNING *`,
       [
         descripcion,
@@ -163,6 +166,7 @@ router.put('/', async (req, res) => {
         precio_doc,
         precio_oferta,
         costo,
+        fecha_alta,
         is_on_offer,
         fabricante_id,
         imageBuffer,   // 🔽 store binary directly in DB

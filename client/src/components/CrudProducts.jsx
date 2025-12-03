@@ -89,6 +89,7 @@ const CrudProducts = () => {
         precio_doc: 0,
         precio_oferta: 0,
         costo: 0,
+        fecha_alta: "",
         is_on_offer: false,
         fabricante_id: "",
         imagen_base64: "",
@@ -188,6 +189,7 @@ const CrudProducts = () => {
                     precio_doc: 0,
                     precio_oferta: 0,
                     costo: 0,
+                    fecha_alta: "",
                     fabricante_id: "",
                     is_on_offer: false,
                     imagen_base64: "",
@@ -497,6 +499,16 @@ const CrudProducts = () => {
                                         type="number"
                                         name="costo"
                                         value={formData.costo}
+                                        onChange={handleInputChange}
+                                        required
+                                    />
+                                </Form.Group>
+                                <Form.Group className="mb-3">
+                                    <Form.Label>Actualizado</Form.Label>
+                                    <Form.Control
+                                        type="date"
+                                        name="fecha_alta"
+                                        value={formData.fecha_alta}
                                         onChange={handleInputChange}
                                         required
                                     />
