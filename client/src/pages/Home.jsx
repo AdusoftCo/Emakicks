@@ -118,9 +118,11 @@ const Home = () => {
 
     return (
         <>
-        {showSplash && <SplashModal onClose={() => setShowSplash(false)} />}
-        {!showSplash && <OffersScreen />}
-    
+        {showSplash && (
+            <SplashModal onClose={() => setShowSplash(false)} />
+        )}
+
+        {!showSplash && (    
         <div className="container mt-4">
             {offers.length > 0 && (
                 <div className="mb-4">
@@ -265,7 +267,8 @@ const Home = () => {
                 </Modal.Footer>
             </Modal>
         </div>
-        </>
+        )}
+    </>
     );
     
 };
