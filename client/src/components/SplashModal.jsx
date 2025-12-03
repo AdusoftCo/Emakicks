@@ -20,7 +20,7 @@ const SplashModal = ({ onClose }) => {
   return (
     <Modal show={show} onHide={handleClose} centered backdrop="static">
       <Modal.Header>
-        <Modal.Title>Estamos en Galeria FERIA DEL SOL - Once !!</Modal.Title>
+        <Modal.Title>Emakick's en FERIA DEL SOL - Once !!</Modal.Title>
         <Button
           variant="close"
           aria-label="Close"
@@ -32,14 +32,14 @@ const SplashModal = ({ onClose }) => {
           <Carousel.Item>
             <img
               className="d-block w-100"
-              src="./assets/localEX2024.png"
+              src="/localEX2024.png"
               alt="Primera foto"
             />
           </Carousel.Item>
           <Carousel.Item>
             <img
               className="d-block w-100"
-              src="./assets/fotoGale2024.png"
+              src="/fotoGale2024.png"
               alt="Segunda foto"
             />
           </Carousel.Item>
