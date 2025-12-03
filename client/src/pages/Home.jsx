@@ -118,154 +118,155 @@ const Home = () => {
 
     return (
         <>
-        {showSplash && <SplashModal onClose={() => setShowSplash(false)} />}
-        {!showSplash && <OffersScreen />}
-    
-        <div className="container mt-4">
-            {offers.length > 0 && (
-                <div className="mb-4">
-                    <h3 className="text-center mb-3" style={{color: '#5728b7', fontSize: '32px'}}>OFERTAS DEL MES</h3>
-                    <Row xs={1} md={2} lg={4} className="g-4">
-                        {offers.map(prod => (
-                            <Col key={prod.id}>
-                                <Card className="h-100">
-                                    <Card.Img 
-                                        variant="top" 
-                                        src={
-                                            prod.imagen_base64
-                                              ? `data:image/jpeg;base64,${prod.imagen_base64}`
-                                              : "https://placehold.co/250x250/E2E8F0/A0AEC0?text=No+Img"
-                                          }
-                                          loading="lazy"
-                                          style={{ height: '250px', objectFit: 'contain' }}
-                                    />
-                                    <Card.Body>
-                                        <Card.Title>{prod.fabricante_nombre} - {prod.descripcion}</Card.Title>
-                                        <Card.Text className="mt-auto">
-                                            {prod.is_on_offer === true ? (
-                                                <>
-                                                    <strong className="text-danger ms" style={{fontSize: '28px'}}>
-                                                        {formatPrice(prod.precio_oferta)}
-                                                    </strong>
-                                                    <span className='text-primary ms-2'>Por Unidad</span>
-                                                </>
-                                            ) : (
-                                                <strong>{formatPrice(prod.precio_doc)}</strong>
-                                            )}
-                                        </Card.Text>
-                                        <Button className='btn-rounded' 
-                                            style={{ backgroundColor: '#5728b7', color: 'white', fontSize:'22px' }} 
-                                            onClick={() => handleShowModal(prod)}>
-                                                Ver Producto
-                                        </Button>
-                                    </Card.Body>
-                                </Card>
-                            </Col>
-                        ))}
-                    </Row>
-                    <a
-                        href="https://wa.me/5491150511072"
-                        className="whatsapp-float"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        <FaWhatsapp size={40} />
-                    </a>
-                </div>
+            {showSplash && <SplashModal onClose={() => setShowSplash(false)} />}
+            {!showSplash && (
+        
+            <div className="container mt-4">
+                {offers.length > 0 && (
+                    <div className="mb-4">
+                        <h3 className="text-center mb-3" style={{color: '#5728b7', fontSize: '32px'}}>OFERTAS DEL MES</h3>
+                        <Row xs={1} md={2} lg={4} className="g-4">
+                            {offers.map(prod => (
+                                <Col key={prod.id}>
+                                    <Card className="h-100">
+                                        <Card.Img 
+                                            variant="top" 
+                                            src={
+                                                prod.imagen_base64
+                                                ? `data:image/jpeg;base64,${prod.imagen_base64}`
+                                                : "https://placehold.co/250x250/E2E8F0/A0AEC0?text=No+Img"
+                                            }
+                                            loading="lazy"
+                                            style={{ height: '250px', objectFit: 'contain' }}
+                                        />
+                                        <Card.Body>
+                                            <Card.Title>{prod.fabricante_nombre} - {prod.descripcion}</Card.Title>
+                                            <Card.Text className="mt-auto">
+                                                {prod.is_on_offer === true ? (
+                                                    <>
+                                                        <strong className="text-danger ms" style={{fontSize: '28px'}}>
+                                                            {formatPrice(prod.precio_oferta)}
+                                                        </strong>
+                                                        <span className='text-primary ms-2'>Por Unidad</span>
+                                                    </>
+                                                ) : (
+                                                    <strong>{formatPrice(prod.precio_doc)}</strong>
+                                                )}
+                                            </Card.Text>
+                                            <Button className='btn-rounded' 
+                                                style={{ backgroundColor: '#5728b7', color: 'white', fontSize:'22px' }} 
+                                                onClick={() => handleShowModal(prod)}>
+                                                    Ver Producto
+                                            </Button>
+                                        </Card.Body>
+                                    </Card>
+                                </Col>
+                            ))}
+                        </Row>
+                        <a
+                            href="https://wa.me/5491150511072"
+                            className="whatsapp-float"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            <FaWhatsapp size={40} />
+                        </a>
+                    </div>
+                    
+                )}
                 
+                <Modal show={showModal} onHide={handleCloseModal}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>
+                            {selectedProduct?.nombre} -
+                            {selectedProduct?.cod_art} - 
+                            {selectedProduct?.descripcion}
+                        </Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        {selectedProduct && (
+                            <>
+                                <img 
+                                    loading="lazy" 
+                                    src={
+                                        selectedProduct.imagen_base64
+                                        ? `data:image/jpeg;base64,${selectedProduct.imagen_base64}`
+                                        : "https://placehold.co/400x400/E2E8F0/A0AEC0?text=No+Img"
+                                    }
+                                    alt={selectedProduct.descripcion} 
+                                    className="w-100 mb-3" 
+                                    style={{maxHeight: '400px', objectFit: 'contain'}} 
+                                />
+                                <p><strong>Unidad:</strong> {formatPrice(selectedProduct.precio_oferta)}</p>
+                                <p><strong>Docena:</strong> {formatPrice(selectedProduct.precio_doc)}</p>
+                                <Form>
+                                    <Form.Group className="mb-3">
+                                        <Form.Label>Color</Form.Label>
+                                        <Form.Control
+                                            as="select"
+                                            name="color"
+                                            value={selectedVariations.color}
+                                            onChange={handleModalVariationChange}
+                                            required
+                                        >
+                                            <option value="">Selecciona Color</option>
+                                            {uniqueColors.map(color => (
+                                                <option key={color} value={color}>{color}</option>
+                                            ))}
+                                        </Form.Control>
+                                    </Form.Group>
+
+                                    <Form.Group className="mb-3">
+                                        <Form.Label>Talla</Form.Label>
+                                        <Form.Control
+                                            as="select"
+                                            name="talla"
+                                            value={selectedVariations.talla}
+                                            onChange={handleModalVariationChange}
+                                            required
+                                            disabled={!selectedVariations.color}
+                                        >
+                                            <option value="">Selecciona Talla</option>
+                                            {filteredTallas.map(talla => (
+                                                <option key={talla} value={talla}>{talla}</option>
+                                            ))}
+                                        </Form.Control>
+                                    </Form.Group>
+
+                                    <Form.Group className="mb-3">
+                                        <Form.Label>Cantidad (Stock: {stock})</Form.Label>
+                                        <Form.Control
+                                            type="number"
+                                            name="quantity"
+                                            value={selectedVariations.quantity}
+                                            onChange={handleModalVariationChange}
+                                            min="1"
+                                            max={stock > 0 ? stock : 1}
+                                            required
+                                            disabled={!selectedVariations.color || !selectedVariations.talla || stock === 0}
+                                        />
+                                    </Form.Group>
+                                </Form>
+                            </>
+                        )}
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button className='btn-rounded' variant="secondary" onClick={handleCloseModal}>
+                            Cerrar
+                        </Button>
+                        <Button 
+                            className='btn-rounded'
+                            style={{ backgroundColor: '#5728b7', color: 'white', borderRadius: '15px' }}
+                            onClick={handleModalAddToCart}
+                            disabled={!selectedVariations.color || !selectedVariations.talla || selectedVariations.quantity <= 0 || stock === 0}
+                        >
+                            Agregar al Carrito
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
+            </div>
             )}
-            
-            <Modal show={showModal} onHide={handleCloseModal}>
-                <Modal.Header closeButton>
-                    <Modal.Title>
-                        {selectedProduct?.nombre} -
-                        {selectedProduct?.cod_art} - 
-                        {selectedProduct?.descripcion}
-                    </Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    {selectedProduct && (
-                        <>
-                            <img 
-                                loading="lazy" 
-                                src={
-                                    selectedProduct.imagen_base64
-                                      ? `data:image/jpeg;base64,${selectedProduct.imagen_base64}`
-                                      : "https://placehold.co/400x400/E2E8F0/A0AEC0?text=No+Img"
-                                  }
-                                alt={selectedProduct.descripcion} 
-                                className="w-100 mb-3" 
-                                style={{maxHeight: '400px', objectFit: 'contain'}} 
-                            />
-                            <p><strong>Unidad:</strong> {formatPrice(selectedProduct.precio_oferta)}</p>
-                            <p><strong>Docena:</strong> {formatPrice(selectedProduct.precio_doc)}</p>
-                            <Form>
-                                <Form.Group className="mb-3">
-                                    <Form.Label>Color</Form.Label>
-                                    <Form.Control
-                                        as="select"
-                                        name="color"
-                                        value={selectedVariations.color}
-                                        onChange={handleModalVariationChange}
-                                        required
-                                    >
-                                        <option value="">Selecciona Color</option>
-                                        {uniqueColors.map(color => (
-                                            <option key={color} value={color}>{color}</option>
-                                        ))}
-                                    </Form.Control>
-                                </Form.Group>
-
-                                <Form.Group className="mb-3">
-                                    <Form.Label>Talla</Form.Label>
-                                    <Form.Control
-                                        as="select"
-                                        name="talla"
-                                        value={selectedVariations.talla}
-                                        onChange={handleModalVariationChange}
-                                        required
-                                        disabled={!selectedVariations.color}
-                                    >
-                                        <option value="">Selecciona Talla</option>
-                                        {filteredTallas.map(talla => (
-                                            <option key={talla} value={talla}>{talla}</option>
-                                        ))}
-                                    </Form.Control>
-                                </Form.Group>
-
-                                <Form.Group className="mb-3">
-                                    <Form.Label>Cantidad (Stock: {stock})</Form.Label>
-                                    <Form.Control
-                                        type="number"
-                                        name="quantity"
-                                        value={selectedVariations.quantity}
-                                        onChange={handleModalVariationChange}
-                                        min="1"
-                                        max={stock > 0 ? stock : 1}
-                                        required
-                                        disabled={!selectedVariations.color || !selectedVariations.talla || stock === 0}
-                                    />
-                                </Form.Group>
-                            </Form>
-                        </>
-                    )}
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button className='btn-rounded' variant="secondary" onClick={handleCloseModal}>
-                        Cerrar
-                    </Button>
-                    <Button 
-                        className='btn-rounded'
-                        style={{ backgroundColor: '#5728b7', color: 'white', borderRadius: '15px' }}
-                        onClick={handleModalAddToCart}
-                        disabled={!selectedVariations.color || !selectedVariations.talla || selectedVariations.quantity <= 0 || stock === 0}
-                    >
-                        Agregar al Carrito
-                    </Button>
-                </Modal.Footer>
-            </Modal>
-        </div>
-        </>
+        </>   
     );
     
 };

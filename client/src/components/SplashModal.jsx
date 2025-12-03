@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Modal, Button, Spinner } from "react-bootstrap";
+import { Modal, Button, Spinner, Carousel } from "react-bootstrap";
 
 const SplashModal = ({ onClose }) => {
   const [show, setShow] = useState(true);
@@ -20,7 +20,7 @@ const SplashModal = ({ onClose }) => {
   return (
     <Modal show={show} onHide={handleClose} centered backdrop="static">
       <Modal.Header>
-        <Modal.Title>Ofertas Exclusivas</Modal.Title>
+        <Modal.Title>Estamos en Galeria FERIA DEL SOL - Once !!</Modal.Title>
         <Button
           variant="close"
           aria-label="Close"
@@ -28,10 +28,27 @@ const SplashModal = ({ onClose }) => {
         />
       </Modal.Header>
       <Modal.Body className="text-center">
+      <Carousel indicators={false} controls={false} interval={2000}>
+          <Carousel.Item>
+            <img
+              className="d-block w-100"
+              src="./assets/localEX2024.png"
+              alt="Primera foto"
+            />
+          </Carousel.Item>
+          <Carousel.Item>
+            <img
+              className="d-block w-100"
+              src="./assets/fotoGale2024.png"
+              alt="Segunda foto"
+            />
+          </Carousel.Item>
+        </Carousel>
+
         <Spinner animation="border" role="status" className="mb-3">
-          <span className="visually-hidden">Loading...</span>
+          <span className="visually-hidden">Cargando ...</span>
         </Spinner>
-        <p>Estamos preparando tus ofertas…</p>
+        <p>FERIA DE OFERTAS …</p>
       </Modal.Body>
     </Modal>
   );
