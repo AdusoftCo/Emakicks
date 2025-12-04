@@ -70,12 +70,22 @@ const calculatePrices = (fabricante_id, costo) => {
             break;
         default:
             docena = costoNum * 1.30;
-            oferta = (costoNum / 12) * 1.53;
+            oferta = (costoNum / 12) * 1.59;
             break;
     }
     return [docena.toFixed(2), oferta.toFixed(2)];
 };
 
+const formatDateDMY = (isoString) => {
+    if (!isoString) return "";
+    const date = new Date(isoString);
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  };
+  
+      
 const CrudProducts = () => {
     const [products, setProducts] = useState([]);
     const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
@@ -86,12 +96,13 @@ const CrudProducts = () => {
     const [formData, setFormData] = useState({
         descripcion: "",
         cod_art: "",
-        precio_doc: 0,
-        precio_oferta: 0,
-        costo: 0,
+        precio_doc: "",
+        precio_oferta: "",
+        costo: "",
         fecha_alta: "",
         is_on_offer: false,
         fabricante_id: "",
+        imagen_nombre: "",
         imagen_base64: "",
         category: "",
         variaciones: [],
@@ -103,7 +114,7 @@ const CrudProducts = () => {
     const [error, setError] = useState('');
 
     const API_BASE_URL = `${import.meta.env.VITE_API_URL}/api/products`;
-    // const BASE_IMAGE_URL = `${import.meta.env.VITE_API_URL}/imagenes/`;
+    const BASE_IMAGE_URL = `${import.meta.env.VITE_API_URL}/imagenes/`;
     
     useEffect(() => {
         const cleanup = loadBootstrapCSS();
@@ -172,12 +183,7 @@ const CrudProducts = () => {
               });
               
             
-            setImagePreviewUrl(
-                product.imagen_base64
-                  ? `data:image/jpeg;base64,${product.imagen_base64}`
-                  : ""
-            );
-              
+            setImagePreviewUrl(`${BASE_IMAGE_URL}${product.imagen}`);
             setIsEditing(true);
             
             } else {
@@ -186,13 +192,14 @@ const CrudProducts = () => {
                 setFormData({
                     descripcion: "",
                     cod_art: "",
-                    precio_doc: 0,
-                    precio_oferta: 0,
-                    costo: 0,
-                    fecha_alta: "",
+                    precio_doc: "",
+                    precio_oferta: "",
+                    costo: "",
+                    fecha_alta: "", 
                     fabricante_id: "",
                     is_on_offer: false,
                     imagen_base64: "",
+                    imagen_nombre: "",
                     variaciones: [],
                 });
 
@@ -242,15 +249,14 @@ const CrudProducts = () => {
     // Handle file input change and create a preview URL
     const handleFileChange = (e) => {
         const file = e.target.files[0];
-        setImageFile(file);
-      
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          setFormData(prev => ({ ...prev, imagen_base64: reader.result }));
-          setImagePreviewUrl(reader.result); // preview in modal
-        };
-        reader.readAsDataURL(file);
-      };
+        if (file) {
+            setImageFile(file);
+            setImagePreviewUrl(URL.createObjectURL(file));
+        } else {
+            setImageFile(null);
+            setImagePreviewUrl('');
+        }
+    };
 
     // Handle form submission (Create or Update)
     const handleSubmit = async (e) => {
@@ -261,7 +267,9 @@ const CrudProducts = () => {
         try {
           const data = {
             ...formData,
-            id: formData.id,
+            fecha_alta: formData.fecha_alta
+                ? formData.fecha_alta.split("T")[0] // keep only YYYY-MM-DD
+                : "",
             variaciones: formData.variaciones,
             is_on_offer: formData.is_on_offer === true,
           };
@@ -341,22 +349,7 @@ const CrudProducts = () => {
                 products.length > 0 ? (
                     products.map(product => (
                     <div className="product-record" key={product.id}>
-                        {product.imagen_base64 ? (
-                            <img
-                                src={`data:image/jpeg;base64,${product.imagen_base64}`}
-                                alt={product.descripcion}
-                                style={{ width: '64px', height: '64px', objectFit: 'cover' }}
-                                onError={(e) => {
-                                e.target.src = 'https://placehold.co/64x64/E2E8F0/A0AEC0?text=No+Img';
-                                }}
-                            />
-                            ) : (
-                            <img
-                                src="https://placehold.co/64x64/E2E8F0/A0AEC0?text=No+Img"
-                                alt="No image"
-                                style={{ width: '64px', height: '64px', objectFit: 'cover' }}
-                            />
-                            )}
+                        <img src={`${BASE_IMAGE_URL}${product.imagen}`} alt={product.descripcion} className="product-image" />
                         <div className="product-field"><strong>Código:</strong> {product.cod_art}</div>
                         <div className="product-field"><strong>Descripción:</strong> {product.descripcion}</div>
                         <div className="product-field"><strong>Fabricante:</strong> {product.fabricante_nombre}</div>
@@ -401,22 +394,12 @@ const CrudProducts = () => {
                             <tr key={product.id}>
                                 <td>{product.cod_art}</td>
                                 <td>
-                                {product.imagen_base64 ? (
                                     <img
-                                        src={`data:image/jpeg;base64,${product.imagen_base64}`}
+                                        src={`${BASE_IMAGE_URL}${product.imagen}`}
                                         alt={product.descripcion}
                                         style={{ width: '64px', height: '64px', objectFit: 'cover' }}
-                                        onError={(e) => {
-                                        e.target.src = 'https://placehold.co/64x64/E2E8F0/A0AEC0?text=No+Img';
-                                        }}
+                                        onError={(e) => { e.target.src = 'https://placehold.co/64x64/E2E8F0/A0AEC0?text=No+Img'; }}
                                     />
-                                    ) : (
-                                    <img
-                                        src="https://placehold.co/64x64/E2E8F0/A0AEC0?text=No+Img"
-                                        alt="No image"
-                                        style={{ width: '64px', height: '64px', objectFit: 'cover' }}
-                                    />
-                                    )}
                                 </td>
                                 <td>{product.descripcion}</td>
                                 <td>{product.fabricante_nombre}</td>
@@ -503,18 +486,25 @@ const CrudProducts = () => {
                                         required
                                     />
                                 </Form.Group>
+
                                 <Form.Group className="mb-3">
+                                    {selectedProduct?.fecha_alta && (
+                                    <div className="mb-2 text-muted">
+                                        <small>
+                                        Última fecha guardada: {formatDateDMY(selectedProduct.fecha_alta)}
+                                        </small>
+                                    </div>
+                                    )}
                                     <Form.Label>Actualizado</Form.Label>
                                     <Form.Control
                                         type="date"
                                         name="fecha_alta"
                                         value={formData.fecha_alta}
                                         onChange={handleInputChange}
-                                        required
                                     />
                                 </Form.Group>
-                                
                             </Col>
+
                             <Col md={6}>
                                 <Form.Group className="mb-3">
                                         <Form.Label>Código de Artículo</Form.Label>
@@ -560,7 +550,7 @@ const CrudProducts = () => {
                                         required
                                     >
                                         <option value="">-- Select Categoria --</option>
-                                        <option value="femeninterior">femenInterior</option>
+                                        <option value="femInterior">femenInterior</option>
                                         <option value="medias">medias</option>
                                         <option value="camisonetas">camisonetas</option>
                                         <option value="masculinos">masculinos</option>
