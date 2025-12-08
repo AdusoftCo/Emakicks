@@ -1,15 +1,16 @@
 {
     "services": {
       "frontend": {
-        "root": "emakicks-frontend",
+        "root": "client",
         "build": "npm run build",
         "start": "npm start"
       },
       "backend": {
-        "root": "emakicks-backend",
+        "root": "server",
         "build": "npm install",
         "start": "npm start"
       }
     }
-  }
+}
+  
   
