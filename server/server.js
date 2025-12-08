@@ -16,10 +16,10 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 5000;
 
 const allowedOrigins = [
-  'https://emakicks-frontend.onrender.com', // your deployed frontend
+  'emakicks-backend-production-b3bd.up.railway.app', // your deployed frontend
   'http://localhost:5173'                   // local dev
 ];
 // Middleware
@@ -52,8 +52,8 @@ app.use('/api/products', productsRouter);
 
 // app.use('/imagenes', express.static(path.join(__dirname, 'imagenes')));
 
-app.listen(PORT, () => {
-  console.log(`Servidor backend corriendo en http://localhost:${PORT}`);
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`Servidor backend corriendo en http://0.0.0.0:${PORT}`);
 });
 
 // POST /api/purchase
