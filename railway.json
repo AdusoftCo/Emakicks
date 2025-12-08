@@ -3,7 +3,7 @@
       "frontend": {
         "root": "client",
         "build": "npm run build",
-        "start": "npm start"
+        "start": "vite preview --port $PORT"
       },
       "backend": {
         "root": "server",
