@@ -21,14 +21,15 @@ router.get('/', async (req, res) => {
 
     // ✅ Optimized single JOIN query for products and variations
     let sql = `
-      SELECT p.*, f.nombre AS fabricante_nombre,
-             COALESCE(json_agg(
-               json_build_object('id', v.id, 'color', v.color, 'talla', v.talla, 'stock', v.stock)
-             ) FILTER (WHERE v.id IS NOT NULL), '[]') AS variaciones
-      FROM productos p
-      LEFT JOIN fabricants f ON p.id_prov = f.id
-      LEFT JOIN variaciones v ON p.id = v.producto_id
-    `;
+        SELECT p.*, f.nombre AS fabricante_nombre,
+              COALESCE(json_agg(
+                json_build_object('id', v.id, 'color', v.color, 'talla', v.talla, 'stock', v.stock)
+              ) FILTER (WHERE v.id IS NOT NULL), '[]') AS variaciones
+        FROM proyecto.productos p
+        LEFT JOIN proyecto.fabricants f ON p.id_prov = f.id
+        LEFT JOIN proyecto.variaciones v ON p.id = v.producto_id
+      `;
+
 
     const conditions = [];
     const params = [];
