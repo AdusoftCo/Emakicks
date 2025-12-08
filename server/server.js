@@ -19,9 +19,10 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 const allowedOrigins = [
-  'emakicks-backend-production-b3bd.up.railway.app', // your deployed frontend
-  'http://localhost:5173'                   // local dev
+  'https://emakicks-frontend-production-4e1b.up.railway.app',
+  'http://localhost:5173'
 ];
+
 // Middleware
 app.use(compression()); // Enable gzip compression for responses
 app.use(express.json({ limit: '20mb' }));
