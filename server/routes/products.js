@@ -59,6 +59,16 @@ router.get('/', async (req, res) => {
   }
 });
 
+router.get('/fabricants', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT id, nombre FROM proyecto.fabricants');
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Error fetching fabricants:', error.message);
+    res.status(500).json({ error: 'Failed to fetch fabricants' });
+  }
+});
+
 // Create product
 router.post('/', async (req, res) => {
   try {

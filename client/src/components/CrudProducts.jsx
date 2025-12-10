@@ -495,7 +495,6 @@ const CrudProducts = () => {
                                         name="fabricante_id"
                                         value={formData.fabricante_id}
                                         onChange={handleInputChange}
-                                        required
                                     >
                                         <option value="">Seleccionar fabricante</option>
                                         {manufacturers.map(manuf => (
