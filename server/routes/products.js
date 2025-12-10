@@ -141,17 +141,21 @@ router.put('/', async (req, res) => {
       imagen_base64,
       imagen_nombre
     } = req.body;
+
     console.log('Received is_on_offer:', is_on_offer);
 
-    // 🔽 INSERT THIS RIGHT HERE
+    // 🔽 FIX: always use schema proyecto
     let finalImageName = imagen_nombre;
 
     if (!imagen_nombre) {
-      const current = await pool.query('SELECT imagen FROM productos WHERE id = $1', [id]);
+      const current = await pool.query(
+        'SELECT imagen FROM proyecto.productos WHERE id = $1',
+        [id]
+      );
       finalImageName = current.rows[0]?.imagen || null;
     }
 
-    // Optional: update image if new one is provided asynchronously
+    // Save image if new
     if (imagen_base64 && imagen_nombre) {
       try {
         const base64Data = imagen_base64.replace(/^data:image\/\w+;base64,/, '');
@@ -168,23 +172,36 @@ router.put('/', async (req, res) => {
       id, fabricante_id, tipo: typeof fabricante_id
     });
 
-    // ✅ Use finalImageName in your UPDATE query
+    // 🔽 FIX: schema prefix
     await pool.query(
-      `UPDATE productos SET descripcion=$1, cod_art=$2, precio_doc=$3, precio_oferta=$4, costo=$5, fecha_alta=$6, is_on_offer=$7, id_prov=$8, imagen=$9 WHERE id=$10`,
-      [descripcion, cod_art, precio_doc, precio_oferta, costo, fecha_alta, is_on_offer, fabricante_id, finalImageName, id]
+      `UPDATE proyecto.productos 
+       SET descripcion=$1, cod_art=$2, precio_doc=$3, precio_oferta=$4,
+           costo=$5, fecha_alta=$6, is_on_offer=$7, id_prov=$8, imagen=$9
+       WHERE id=$10`,
+      [
+        descripcion, cod_art, precio_doc, precio_oferta, costo,
+        fecha_alta, is_on_offer, fabricante_id, finalImageName, id
+      ]
     );
 
-    // ✅ Parse variaciones safely
     const parsedVariaciones = Array.isArray(variaciones)
       ? variaciones
       : JSON.parse(variaciones);
 
-    await pool.query(`DELETE FROM variaciones WHERE producto_id = $1`, [id]);
+    // 🔽 FIX: schema prefix
+    await pool.query(
+      `DELETE FROM proyecto.variaciones WHERE producto_id = $1`,
+      [id]
+    );
 
     if (parsedVariaciones.length > 0) {
-      const values = parsedVariaciones.map(v => `(${id}, '${v.color}', '${v.talla}', ${v.stock})`).join(', ');
+      const values = parsedVariaciones
+        .map(v => `(${id}, '${v.color}', '${v.talla}', ${v.stock})`)
+        .join(', ');
+
       await pool.query(
-        `INSERT INTO variaciones (producto_id, color, talla, stock) VALUES ${values}`
+        `INSERT INTO proyecto.variaciones (producto_id, color, talla, stock)
+         VALUES ${values}`
       );
     }
 
@@ -199,11 +216,15 @@ router.put('/', async (req, res) => {
 router.delete('/:id', async (req, res) => {
   const { id } = req.params;
   try {
-    // Delete variations first (if they exist)
-    await pool.query('DELETE FROM variaciones WHERE producto_id = $1', [id]);
+    await pool.query(
+      'DELETE FROM proyecto.variaciones WHERE producto_id = $1',
+      [id]
+    );
 
-    // Then delete the product
-    await pool.query('DELETE FROM productos WHERE id = $1', [id]);
+    await pool.query(
+      'DELETE FROM proyecto.productos WHERE id = $1',
+      [id]
+    );
 
     res.json({ message: 'Product deleted successfully' });
   } catch (error) {
