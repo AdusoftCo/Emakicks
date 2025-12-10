@@ -1,14 +1,18 @@
-//products.js
+// products.js
 import express from 'express';
-import fs from 'fs';
 import pool from '../db.js';
-import { Buffer } from 'buffer';
+import cloudinary from 'cloudinary';
 import { fileURLToPath } from 'url';
 import path from 'path';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+cloudinary.v2.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD,
+  api_key: process.env.CLOUDINARY_KEY,
+  api_secret: process.env.CLOUDINARY_SECRET
+});
 
 const router = express.Router();
 
@@ -17,30 +21,22 @@ router.get('/', async (req, res) => {
   const offset = (page - 1) * limit;
 
   try {
-    console.log('Fetching products with pagination...');
-
-    // ✅ Optimized single JOIN query for products and variations
     let sql = `
-        SELECT p.*, f.nombre AS fabricante_nombre,
-              COALESCE(json_agg(
-                json_build_object('id', v.id, 'color', v.color, 'talla', v.talla, 'stock', v.stock)
-              ) FILTER (WHERE v.id IS NOT NULL), '[]') AS variaciones
-        FROM proyecto.productos p
-        LEFT JOIN proyecto.fabricants f ON p.id_prov = f.id
-        LEFT JOIN proyecto.variaciones v ON p.id = v.producto_id
-      `;
-
+      SELECT p.*, f.nombre AS fabricante_nombre,
+        COALESCE(json_agg(
+          json_build_object('id', v.id, 'color', v.color, 'talla', v.talla, 'stock', v.stock)
+        ) FILTER (WHERE v.id IS NOT NULL), '[]') AS variaciones
+      FROM proyecto.productos p
+      LEFT JOIN proyecto.fabricants f ON p.id_prov = f.id
+      LEFT JOIN proyecto.variaciones v ON p.id = v.producto_id
+    `;
 
     const conditions = [];
     const params = [];
 
-    if (type === 'offers') {
-      conditions.push('p.is_on_offer = true');
-    }
+    if (type === 'offers') conditions.push('p.is_on_offer = true');
 
-    if (conditions.length > 0) {
-      sql += ' WHERE ' + conditions.join(' AND ');
-    }
+    if (conditions.length > 0) sql += ' WHERE ' + conditions.join(' AND ');
 
     sql += `
       GROUP BY p.id, f.nombre
@@ -56,8 +52,6 @@ router.get('/', async (req, res) => {
       variaciones: row.variaciones || []
     }));
 
-    console.log(`Products fetched: ${products.length} (page ${page}, limit ${limit})`);
-
     res.json(products);
   } catch (error) {
     console.error('Error fetching products:', error.message);
@@ -65,16 +59,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-router.get('/fabricants', async (req, res) => {
-  try {
-    const result = await pool.query('SELECT id, nombre FROM proyecto.fabricants');
-    res.json(result.rows);
-  } catch (error) {
-    console.error('Error fetching fabricants:', error.message);
-    res.status(500).json({ error: 'Failed to fetch fabricants' });
-  }
-});
-
+// Create product
 router.post('/', async (req, res) => {
   try {
     const {
@@ -88,43 +73,52 @@ router.post('/', async (req, res) => {
       fabricante_id,
       variaciones,
       imagen_base64,
-      imagen_nombre,
       category
     } = req.body;
 
-    // Save image to /imagenes folder asynchronously
-    if (imagen_base64 && imagen_nombre) {
-      const base64Data = imagen_base64.replace(/^data:image\/\w+;base64,/, '');
-      const buffer = Buffer.from(base64Data, 'base64');
-      const imagePath = path.join(__dirname, '..', 'imagenes', imagen_nombre);
-      await fs.promises.writeFile(imagePath, buffer);
+    let imageUrl = null;
+
+    // Upload image to Cloudinary
+    if (imagen_base64) {
+      const upload = await cloudinary.v2.uploader.upload(imagen_base64, {
+        folder: 'productos'
+      });
+      imageUrl = upload.secure_url;
     }
 
-    // Insert product
     const result = await pool.query(
-      `INSERT INTO productos (descripcion, cod_art, precio_doc, precio_oferta, costo, fecha_alta, is_on_offer, id_prov, imagen, category)
+      `INSERT INTO proyecto.productos 
+      (descripcion, cod_art, precio_doc, precio_oferta, costo, fecha_alta, is_on_offer, id_prov, imagen, category)
        VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) RETURNING id`,
-      [descripcion, cod_art, precio_doc, precio_oferta, costo, fecha_alta, is_on_offer, fabricante_id, imagen_nombre, category]
+      [
+        descripcion, cod_art, precio_doc, precio_oferta, costo,
+        fecha_alta, is_on_offer, fabricante_id, imageUrl, category
+      ]
     );
 
     const productoId = result.rows[0].id;
 
-    // Batch insert variations
     if (variaciones && variaciones.length > 0) {
-      const values = variaciones.map(v => `(${productoId}, '${v.color}', '${v.talla}', ${v.stock})`).join(', ');
+      const values = variaciones
+        .map(v => `(${productoId}, '${v.color}', '${v.talla}', ${v.stock})`)
+        .join(', ');
       await pool.query(
-        `INSERT INTO variaciones (producto_id, color, talla, stock) VALUES ${values}`
+        `INSERT INTO proyecto.variaciones (producto_id, color, talla, stock) VALUES ${values}`
       );
     }
 
-    res.status(201).json({ message: 'Product created successfully', id: productoId });
+    res.status(201).json({
+      message: 'Product created successfully',
+      id: productoId
+    });
+
   } catch (error) {
     console.error('Error creating product:', error.message);
     res.status(500).json({ error: 'Failed to create product' });
   }
 });
 
-// Update
+// Update product
 router.put('/', async (req, res) => {
   try {
     const {
@@ -138,49 +132,34 @@ router.put('/', async (req, res) => {
       is_on_offer,
       fabricante_id,
       variaciones,
-      imagen_base64,
-      imagen_nombre
+      imagen_base64
     } = req.body;
 
-    console.log('Received is_on_offer:', is_on_offer);
+    let finalImageUrl = null;
 
-    // 🔽 FIX: always use schema proyecto
-    let finalImageName = imagen_nombre;
-
-    if (!imagen_nombre) {
+    if (imagen_base64) {
+      // Upload new image
+      const upload = await cloudinary.v2.uploader.upload(imagen_base64, {
+        folder: 'productos'
+      });
+      finalImageUrl = upload.secure_url;
+    } else {
+      // Keep old image
       const current = await pool.query(
-        'SELECT imagen FROM proyecto.productos WHERE id = $1',
+        'SELECT imagen FROM proyecto.productos WHERE id=$1',
         [id]
       );
-      finalImageName = current.rows[0]?.imagen || null;
+      finalImageUrl = current.rows[0]?.imagen || null;
     }
 
-    // Save image if new
-    if (imagen_base64 && imagen_nombre) {
-      try {
-        const base64Data = imagen_base64.replace(/^data:image\/\w+;base64,/, '');
-        const buffer = Buffer.from(base64Data, 'base64');
-        const imagePath = path.join(__dirname, '..', 'imagenes', imagen_nombre);
-        await fs.promises.writeFile(imagePath, buffer);
-        console.log('Image saved to:', imagePath);
-      } catch (err) {
-        console.error('Image save error:', err.message);
-      }
-    }
-
-    console.log('Updating product with:', {
-      id, fabricante_id, tipo: typeof fabricante_id
-    });
-
-    // 🔽 FIX: schema prefix
     await pool.query(
-      `UPDATE proyecto.productos 
+      `UPDATE proyecto.productos
        SET descripcion=$1, cod_art=$2, precio_doc=$3, precio_oferta=$4,
            costo=$5, fecha_alta=$6, is_on_offer=$7, id_prov=$8, imagen=$9
        WHERE id=$10`,
       [
         descripcion, cod_art, precio_doc, precio_oferta, costo,
-        fecha_alta, is_on_offer, fabricante_id, finalImageName, id
+        fecha_alta, is_on_offer, fabricante_id, finalImageUrl, id
       ]
     );
 
@@ -188,7 +167,6 @@ router.put('/', async (req, res) => {
       ? variaciones
       : JSON.parse(variaciones);
 
-    // 🔽 FIX: schema prefix
     await pool.query(
       `DELETE FROM proyecto.variaciones WHERE producto_id = $1`,
       [id]
@@ -198,7 +176,6 @@ router.put('/', async (req, res) => {
       const values = parsedVariaciones
         .map(v => `(${id}, '${v.color}', '${v.talla}', ${v.stock})`)
         .join(', ');
-
       await pool.query(
         `INSERT INTO proyecto.variaciones (producto_id, color, talla, stock)
          VALUES ${values}`
@@ -206,30 +183,10 @@ router.put('/', async (req, res) => {
     }
 
     res.json({ message: 'Product and variations updated successfully' });
+
   } catch (error) {
     console.error('Error updating product:', error.message);
     res.status(500).json({ error: 'Failed to update product' });
-  }
-});
-
-//Delete
-router.delete('/:id', async (req, res) => {
-  const { id } = req.params;
-  try {
-    await pool.query(
-      'DELETE FROM proyecto.variaciones WHERE producto_id = $1',
-      [id]
-    );
-
-    await pool.query(
-      'DELETE FROM proyecto.productos WHERE id = $1',
-      [id]
-    );
-
-    res.json({ message: 'Product deleted successfully' });
-  } catch (error) {
-    console.error('Error deleting product:', error.message);
-    res.status(500).json({ error: 'Failed to delete product' });
   }
 });
 
