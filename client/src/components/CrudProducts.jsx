@@ -101,7 +101,7 @@ const CrudProducts = () => {
         fecha_alta: "",
         is_on_offer: false,
         fabricante_id: "",
-        imagen_base64: "",
+        imagen_url: "",
         category: "",
         variaciones: [],
     });
@@ -114,6 +114,28 @@ const CrudProducts = () => {
     const API_BASE_URL = `${import.meta.env.VITE_API_URL}/api/products`;
     // const BASE_IMAGE_URL = `${import.meta.env.VITE_API_URL}/imagenes/`;
     
+    const uploadToCloudinary = async (file) => {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append(
+          'upload_preset',
+          process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET
+        );
+      
+        const cloudName = process.env.REACT_APP_CLOUDINARY_CLOUD_NAME;
+      
+        const res = await fetch(
+          `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+          {
+            method: "POST",
+            body: formData
+          }
+        );
+      
+        const data = await res.json();
+        return data.secure_url; // <-- this is what you save
+      };
+      
     useEffect(() => {
         const cleanup = loadBootstrapCSS();
         return cleanup;
@@ -143,7 +165,9 @@ const CrudProducts = () => {
     // Fetch manufacturers from the API
     const fetchManufacturers = async () => {
         try {
-          const response = await axios.get(`${API_BASE_URL}/fabricants`);
+            const response = await axios.get(
+            `${API_BASE_URL}/api/products/fabricants`
+            );
           setManufacturers(response.data);
         } catch (err) {
           console.error('Error fetching manufacturers:', err);
@@ -154,63 +178,60 @@ const CrudProducts = () => {
         fetchProducts();
         fetchManufacturers();
     }, []);
-
+    // open modal
     const openModal = async (product = null) => {
         await fetchManufacturers();
-      
+    
         if (product) {
-
-            const safeVariaciones = Array.isArray(product.variaciones) ? product.variaciones : [];
-        
-            // If backend sends fabricante_id, use it directly
+            const safeVariaciones = Array.isArray(product.variaciones)
+                ? product.variaciones
+                : [];
+    
+            // Manufacturer ID resolution
             let fabricanteId = product.fabricante_id;
-        
-            // If backend only sends fabricante_nombre, look up the id
+    
             if (!fabricanteId && product.fabricante_nombre) {
                 const found = manufacturers.find(m => m.nombre === product.fabricante_nombre);
                 fabricanteId = found ? found.id : "";
             }
-        
+    
             setSelectedProduct(product);
-            
+    
             setFormData({
                 ...product,
                 fabricante_id: fabricanteId ? String(fabricanteId) : "",
                 is_on_offer: product.is_on_offer === true,
-                variaciones: safeVariaciones, // ✅ keep as array
-              });
-              
-            
-            setImagePreviewUrl(
-                product.imagen_base64
-                  ? `data:image/jpeg;base64,${product.imagen_base64}`
-                  : ""
-            );
-              
+                variaciones: safeVariaciones,
+                imagen_url: product.imagen_url || "",
+            });
+    
+            setImagePreviewUrl(product.imagen_url || "");
+    
             setIsEditing(true);
-            
-            } else {
-                // reset for create mode
-                setSelectedProduct(null);
-                setFormData({
-                    descripcion: "",
-                    cod_art: "",
-                    precio_doc: 0,
-                    precio_oferta: 0,
-                    costo: 0,
-                    fecha_alta: "",
-                    fabricante_id: "",
-                    is_on_offer: false,
-                    imagen_base64: "",
-                    variaciones: [],
-                });
-
+        } 
+        else {
+            // Reset for create mode
+            setSelectedProduct(null);
+            setFormData({
+                descripcion: "",
+                cod_art: "",
+                precio_doc: 0,
+                precio_oferta: 0,
+                costo: 0,
+                fecha_alta: "",
+                fabricante_id: "",
+                is_on_offer: false,
+                imagen_url: "",
+                category: "",
+                variaciones: [],
+            });
+    
             setImagePreviewUrl("");
             setIsEditing(false);
-            }
-        
-            setIsModalOpen(true);
-      };
+        }
+    
+        setIsModalOpen(true);
+    };
       
     // Close Modal
     const closeModal = () => {
@@ -248,58 +269,56 @@ const CrudProducts = () => {
         setFormData(newFormData);
     };
 
-    // Handle file input change and create a preview URL
+    // Handle file input change and preview
     const handleFileChange = (e) => {
         const file = e.target.files[0];
         setImageFile(file);
       
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          setFormData(prev => ({ ...prev, imagen_base64: reader.result }));
-          setImagePreviewUrl(reader.result); // preview in modal
-        };
-        reader.readAsDataURL(file);
-      };
+        // Show preview
+        const preview = URL.createObjectURL(file);
+        setImagePreviewUrl(preview);
+    };
 
     // Handle form submission (Create or Update)
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
-        setError('');
+        setError("");
       
         try {
           const data = {
             ...formData,
-            id: formData.id,
             fecha_alta: formData.fecha_alta
-                ? formData.fecha_alta.split("T")[0] // keep only YYYY-MM-DD
-                : "",
+              ? formData.fecha_alta.split("T")[0]
+              : "",
             variaciones: formData.variaciones,
             is_on_offer: formData.is_on_offer === true,
           };
-          console.log('Submitting is_on_offer:', formData.is_on_offer ? true : false);
-
-          if (imageFile) {
-            // Convert image to base64 using a Promise
-            const base64String = await new Promise((resolve, reject) => {
-              const reader = new FileReader();
-              reader.readAsDataURL(imageFile);
-              reader.onloadend = () => resolve(reader.result);
-              reader.onerror = reject;
-            });
       
-            data.imagen_base64 = base64String;
-            data.imagen_nombre = imageFile.name;
+          // Upload new image to Cloudinary
+          if (imageFile) {
+            const cloudinaryUrl =
+              "https://api.cloudinary.com/v1_1/dxgn8p0ye/image/upload";
+      
+            const formDataCloud = new FormData();
+            formDataCloud.append("file", imageFile);
+            formDataCloud.append("upload_preset", "emakicks_unsigned");
+      
+            const uploadRes = await axios.post(cloudinaryUrl, formDataCloud);
+      
+            data.imagen_url = uploadRes.data.secure_url;
           }
       
+          // Save or update
           await submitData(data);
+      
         } catch (err) {
-          console.error('Form submission error:', err);
-          setError('Error al guardar los datos. Por favor, revisa la consola.');
+          console.error("Submit error:", err);
+          setError("Error uploading image or saving data.");
+        } finally {
           setLoading(false);
         }
       };
-      
 
     // Submits the form data to the API
     const submitData = async (data) => {

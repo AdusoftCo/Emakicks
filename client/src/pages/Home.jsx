@@ -41,16 +41,35 @@ const Home = () => {
         fetchData();
       }, []);
 
-    const handleShowModal = (product) => {
-        setSelectedProduct(product);
-        setShowModal(true);
+
+      const handleShowModal = (product) => {
+        // Asegurar que variaciones sea array siempre
+        const safeVariaciones = Array.isArray(product.variaciones)
+            ? product.variaciones
+            : [];
+    
+        // Asegurar imagen base64 compatible
+        const safeImage = product.imagen_base64
+            ? `data:image/jpeg;base64,${product.imagen_base64}`
+            : "https://placehold.co/400x400/E2E8F0/A0AEC0?text=No+Img";
+    
+        const cleanProduct = {
+            ...product,
+            variaciones: safeVariaciones,
+            imagen_safe: safeImage   // <-- agregamos imagen segura
+        };
+    
+        setSelectedProduct(cleanProduct);
+    
         setSelectedVariations({
-            color: '',
-            talla: '',
+            color: "",
+            talla: "",
             quantity: 1
         });
+    
+        setShowModal(true);
     };
-
+    
     const handleCloseModal = () => {
         setShowModal(false);
         setSelectedProduct(null);

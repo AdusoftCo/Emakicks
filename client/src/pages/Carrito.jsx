@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
 import { CartContext } from '../components/CartContext';
 import { formatPrice } from '../utils/formater';
 import CuErre from '../assets/0001.png';
+
 const BASE_IMAGE_URL = `${import.meta.env.VITE_API_URL}/imagenes/`;
 
 const Carrito = () => {
