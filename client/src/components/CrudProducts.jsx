@@ -178,10 +178,12 @@ const CrudProducts = () => {
         fetchProducts();
         fetchManufacturers();
     }, []);
+
+    
     // open modal
     const openModal = async (product = null) => {
         await fetchManufacturers();
-    
+        const formattedDate = new Date(product.fecha_alta).toISOString().split("T")[0];
         if (product) {
             const safeVariaciones = Array.isArray(product.variaciones)
                 ? product.variaciones
@@ -279,46 +281,60 @@ const CrudProducts = () => {
         setImagePreviewUrl(preview);
     };
 
-    // Handle form submission (Create or Update)
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
         setError("");
-      
+    
         try {
-          const data = {
-            ...formData,
-            fecha_alta: formData.fecha_alta
-              ? formData.fecha_alta.split("T")[0]
-              : "",
-            variaciones: formData.variaciones,
-            is_on_offer: formData.is_on_offer === true,
-          };
-      
-          // Upload new image to Cloudinary
-          if (imageFile) {
-            const cloudinaryUrl =
-              "https://api.cloudinary.com/v1_1/dxgn8p0ye/image/upload";
-      
-            const formDataCloud = new FormData();
-            formDataCloud.append("file", imageFile);
-            formDataCloud.append("upload_preset", "emakicks_unsigned");
-      
-            const uploadRes = await axios.post(cloudinaryUrl, formDataCloud);
-      
-            data.imagen_url = uploadRes.data.secure_url;
-          }
-      
-          // Save or update
-          await submitData(data);
-      
+            const data = {
+                ...formData,
+                fecha_alta: formData.fecha_alta
+                    ? formData.fecha_alta.split("T")[0]
+                    : "",
+                variaciones: formData.variaciones,
+                is_on_offer: formData.is_on_offer === true,
+            };
+    
+            // ---------------------------------------------------------
+            // IMAGE LOGIC
+            // ---------------------------------------------------------
+    
+            if (imageFile) {
+                // User selected new image → upload to Cloudinary
+                const cloudinaryUrl =
+                    "https://api.cloudinary.com/v1_1/dxgn8p0ye/image/upload";
+    
+                const formDataCloud = new FormData();
+                formDataCloud.append("file", imageFile);
+                formDataCloud.append("upload_preset", "emakicks_unsigned");
+    
+                const uploadRes = await axios.post(cloudinaryUrl, formDataCloud);
+    
+                data.imagen_url = uploadRes.data.secure_url;
+            } 
+            else if (isEditing && selectedProduct?.imagen_url) {
+                // No new image selected → keep existing image
+                data.imagen_url = selectedProduct.imagen_url;
+            } 
+            else {
+                // Creating with no image → you can allow empty or enforce required
+                data.imagen_url = "";
+            }
+    
+            // ---------------------------------------------------------
+            // SAVE / UPDATE PRODUCT
+            // ---------------------------------------------------------
+            await submitData(data);
+    
         } catch (err) {
-          console.error("Submit error:", err);
-          setError("Error uploading image or saving data.");
+            console.error("Submit error:", err);
+            setError("Error uploading image or saving data.");
         } finally {
-          setLoading(false);
+            setLoading(false);
         }
-      };
+    };
+    
 
     // Submits the form data to the API
     const submitData = async (data) => {
@@ -545,7 +561,7 @@ const CrudProducts = () => {
                                     <Form.Control
                                         type="date"
                                         name="fecha_alta"
-                                        value={formData.fecha_alta}
+                                        value={formattedDate}
                                         onChange={handleInputChange}
                                     />
                                 </Form.Group>
@@ -565,27 +581,45 @@ const CrudProducts = () => {
                                 
                                 <Form.Group className="mb-3">
                                     <Form.Label>Imagen</Form.Label>
+
+                                    {/* If editing and no new file selected yet → show current image */}
+                                    {isEditing && !imagePreviewUrl && selectedProduct?.image && (
+                                        <div className="mb-2">
+                                            <small className="text-muted">Imagen actual:</small>
+                                            <img
+                                                src={selectedProduct.image}
+                                                alt="Actual"
+                                                className="img-fluid mt-2"
+                                                style={{ maxHeight: "200px" }}
+                                            />
+                                        </div>
+                                    )}
+
+                                    {/* File picker (optional when editing) */}
                                     <Form.Control
                                         type="file"
                                         accept="image/*"
                                         onChange={handleFileChange}
                                     />
+
+                                    {/* Preview for new selected image */}
                                     {imagePreviewUrl && (
                                         <img
                                             src={imagePreviewUrl}
                                             alt="Vista previa"
                                             className="mt-2 img-fluid"
+                                            style={{ maxHeight: "200px" }}
                                         />
                                     )}
-                                </Form.Group>
-                                <Form.Group className="mb-3">
-                                    <Form.Check
-                                        type="checkbox"
-                                        name="is_on_offer"
-                                        label="En Oferta"
-                                        checked={formData.is_on_offer}
-                                        onChange={handleInputChange}
-                                    />
+
+                                    {/* Helper message */}
+                                    {isEditing && (
+                                        <div>
+                                            <small className="text-muted">
+                                                *Si no seleccionas una nueva imagen, se mantendrá la actual.
+                                            </small>
+                                        </div>
+                                    )}
                                 </Form.Group>
                                     
                                 <FormGroup controlId="category" className='mb-3'>
