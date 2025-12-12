@@ -1,4 +1,4 @@
-   //CrudProducts.jsx
+//CrudProducts.jsx
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import {
@@ -105,37 +105,16 @@ const CrudProducts = () => {
         category: "",
         variaciones: [],
     });
-    const [formattedDate, setFormattedDate] = useState("");
+    
     const [imageFile, setImageFile] = useState(null);
     const [imagePreviewUrl, setImagePreviewUrl] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+    const [formattedDate, setFormattedDate] = useState("");
 
     const API_BASE_URL = `${import.meta.env.VITE_API_URL}/api/products`;
     // const BASE_IMAGE_URL = `${import.meta.env.VITE_API_URL}/imagenes/`;
-    
-    const uploadToCloudinary = async (file) => {
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append(
-          'upload_preset',
-          process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET
-        );
-      
-        const cloudName = process.env.REACT_APP_CLOUDINARY_CLOUD_NAME;
-      
-        const res = await fetch(
-          `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
-          {
-            method: "POST",
-            body: formData
-          }
-        );
-      
-        const data = await res.json();
-        return data.secure_url; // <-- this is what you save
-    };
-      
+          
     useEffect(() => {
         const cleanup = loadBootstrapCSS();
         return cleanup;
@@ -201,7 +180,9 @@ const CrudProducts = () => {
             const dateOnly = product.fecha_alta
                 ? new Date(product.fecha_alta).toISOString().split("T")[0]
                 : "";
-                   
+            
+            setFormattedDate(dateOnly);
+            
             setFormData(prev => ({
                 ...prev,
                 ...product,
@@ -568,7 +549,7 @@ const CrudProducts = () => {
                                     <Form.Control
                                         type="date"
                                         name="fecha_alta"
-                                        value={formData.fecha_alta}
+                                        value={formattedDate}
                                         onChange={handleInputChange}
                                     />
                                 </Form.Group>
