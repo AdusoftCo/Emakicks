@@ -105,7 +105,7 @@ const CrudProducts = () => {
         category: "",
         variaciones: [],
     });
-
+    const [formattedDate, setFormattedDate] = useState("");
     const [imageFile, setImageFile] = useState(null);
     const [imagePreviewUrl, setImagePreviewUrl] = useState('');
     const [loading, setLoading] = useState(false);
@@ -134,7 +134,7 @@ const CrudProducts = () => {
       
         const data = await res.json();
         return data.secure_url; // <-- this is what you save
-      };
+    };
       
     useEffect(() => {
         const cleanup = loadBootstrapCSS();
@@ -165,8 +165,7 @@ const CrudProducts = () => {
     // Fetch manufacturers from the API
     const fetchManufacturers = async () => {
         try {
-            const response = await axios.get(
-            `${API_BASE_URL}/api/products/fabricants`
+            const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/fabricants`
             );
           setManufacturers(response.data);
         } catch (err) {
@@ -179,11 +178,10 @@ const CrudProducts = () => {
         fetchManufacturers();
     }, []);
 
-    const formattedDate = new Date(product.fecha_alta).toISOString().split("T")[0];
     // open modal
     const openModal = async (product = null) => {
         await fetchManufacturers();
-        
+    
         if (product) {
             const safeVariaciones = Array.isArray(product.variaciones)
                 ? product.variaciones
@@ -199,21 +197,30 @@ const CrudProducts = () => {
     
             setSelectedProduct(product);
     
-            setFormData({
+            // FIX: set formatted date from product.fecha_alta
+            const dateOnly = product.fecha_alta
+                ? new Date(product.fecha_alta).toISOString().split("T")[0]
+                : "";
+                   
+            setFormData(prev => ({
+                ...prev,
                 ...product,
+                fecha_alta: dateOnly,
                 fabricante_id: fabricanteId ? String(fabricanteId) : "",
                 is_on_offer: product.is_on_offer === true,
                 variaciones: safeVariaciones,
                 imagen_url: product.imagen_url || "",
-            });
+            }));;
     
             setImagePreviewUrl(product.imagen_url || "");
-    
             setIsEditing(true);
         } 
         else {
-            // Reset for create mode
+            // RESET (create mode)
             setSelectedProduct(null);
+    
+            setFormattedDate("");   // ← important for clean modal
+    
             setFormData({
                 descripcion: "",
                 cod_art: "",
@@ -234,7 +241,7 @@ const CrudProducts = () => {
     
         setIsModalOpen(true);
     };
-      
+    
     // Close Modal
     const closeModal = () => {
         setIsModalOpen(false);
@@ -561,7 +568,7 @@ const CrudProducts = () => {
                                     <Form.Control
                                         type="date"
                                         name="fecha_alta"
-                                        value={formattedDate}
+                                        value={formData.fecha_alta}
                                         onChange={handleInputChange}
                                     />
                                 </Form.Group>
@@ -582,12 +589,12 @@ const CrudProducts = () => {
                                 <Form.Group className="mb-3">
                                     <Form.Label>Imagen</Form.Label>
 
-                                    {/* If editing and no new file selected yet → show current image */}
-                                    {isEditing && !imagePreviewUrl && selectedProduct?.image && (
+                                    {/* Show current image when editing and no new file selected */}
+                                    {isEditing && !imagePreviewUrl && selectedProduct?.imagen_url && (
                                         <div className="mb-2">
                                             <small className="text-muted">Imagen actual:</small>
                                             <img
-                                                src={selectedProduct.image}
+                                                src={selectedProduct.imagen_url}
                                                 alt="Actual"
                                                 className="img-fluid mt-2"
                                                 style={{ maxHeight: "200px" }}
@@ -595,14 +602,14 @@ const CrudProducts = () => {
                                         </div>
                                     )}
 
-                                    {/* File picker (optional when editing) */}
+                                    {/* File picker */}
                                     <Form.Control
                                         type="file"
                                         accept="image/*"
                                         onChange={handleFileChange}
                                     />
 
-                                    {/* Preview for new selected image */}
+                                    {/* Preview for newly selected image */}
                                     {imagePreviewUrl && (
                                         <img
                                             src={imagePreviewUrl}
@@ -612,7 +619,6 @@ const CrudProducts = () => {
                                         />
                                     )}
 
-                                    {/* Helper message */}
                                     {isEditing && (
                                         <div>
                                             <small className="text-muted">
@@ -621,6 +627,7 @@ const CrudProducts = () => {
                                         </div>
                                     )}
                                 </Form.Group>
+
                                     
                                 <FormGroup controlId="category" className='mb-3'>
                                     <FormLabel>Categoria</FormLabel>
