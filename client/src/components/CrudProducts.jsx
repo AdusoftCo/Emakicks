@@ -179,11 +179,11 @@ const CrudProducts = () => {
         fetchManufacturers();
     }, []);
 
-    
+    const formattedDate = new Date(product.fecha_alta).toISOString().split("T")[0];
     // open modal
     const openModal = async (product = null) => {
         await fetchManufacturers();
-        const formattedDate = new Date(product.fecha_alta).toISOString().split("T")[0];
+        
         if (product) {
             const safeVariaciones = Array.isArray(product.variaciones)
                 ? product.variaciones
