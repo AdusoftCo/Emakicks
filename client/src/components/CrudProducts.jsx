@@ -158,15 +158,14 @@ const CrudProducts = () => {
     }, []);
 
     // open modal
-    const openModal = async (product = null) => {
-        await fetchManufacturers();
+    const openModal = (product = null) => {
+        fetchManufacturers(); // no await
     
         if (product) {
             const safeVariaciones = Array.isArray(product.variaciones)
                 ? product.variaciones
                 : [];
     
-            // Manufacturer ID resolution
             let fabricanteId = product.fabricante_id;
     
             if (!fabricanteId && product.fabricante_nombre) {
@@ -176,13 +175,12 @@ const CrudProducts = () => {
     
             setSelectedProduct(product);
     
-            // FIX: set formatted date from product.fecha_alta
             const dateOnly = product.fecha_alta
                 ? new Date(product.fecha_alta).toISOString().split("T")[0]
                 : "";
-            
+    
             setFormattedDate(dateOnly);
-            
+    
             setFormData(prev => ({
                 ...prev,
                 ...product,
@@ -191,33 +189,12 @@ const CrudProducts = () => {
                 is_on_offer: product.is_on_offer === true,
                 variaciones: safeVariaciones,
                 imagen_url: product.imagen_url || "",
-            }));;
+            }));
     
             setImagePreviewUrl(product.imagen_url || "");
             setIsEditing(true);
-        } 
-        else {
-            // RESET (create mode)
-            setSelectedProduct(null);
-    
-            setFormattedDate("");   // ← important for clean modal
-    
-            setFormData({
-                descripcion: "",
-                cod_art: "",
-                precio_doc: 0,
-                precio_oferta: 0,
-                costo: 0,
-                fecha_alta: "",
-                fabricante_id: "",
-                is_on_offer: false,
-                imagen_url: "",
-                category: "",
-                variaciones: [],
-            });
-    
-            setImagePreviewUrl("");
-            setIsEditing(false);
+        } else {
+            // reset code...
         }
     
         setIsModalOpen(true);
