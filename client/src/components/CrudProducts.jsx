@@ -526,7 +526,7 @@ const CrudProducts = () => {
                                     <Form.Control
                                         type="date"
                                         name="fecha_alta"
-                                        value={formattedDate}
+                                        value={FormData.fecha_alta}
                                         onChange={handleInputChange}
                                     />
                                 </Form.Group>
@@ -653,7 +653,7 @@ const CrudProducts = () => {
                             </Button>
                             <Button variant="primary" type="submit" disabled={loading} className='btn-rounded'>
                                 {loading ? 'Guardando...' : (isEditing ? 'Actualizar Producto' : 'Crear Producto')}
-                            </Button>
+                            </Button>Ñ
                         </div>
                     </Form>
                 </Modal.Body>
