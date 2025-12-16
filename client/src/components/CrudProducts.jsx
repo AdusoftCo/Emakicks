@@ -353,9 +353,9 @@ const CrudProducts = () => {
                 products.length > 0 ? (
                     products.map(product => (
                     <div className="product-record" key={product.id}>
-                        {product.imagen_base64 ? (
+                        {product.imagen_url ? (
                             <img
-                                src={`data:image/jpeg;base64,${product.imagen_base64}`}
+                                src={`data:image/jpeg;base64,${product.imagen_url}`}
                                 alt={product.descripcion}
                                 style={{ width: '64px', height: '64px', objectFit: 'cover' }}
                                 onError={(e) => {
