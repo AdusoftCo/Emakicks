@@ -414,9 +414,9 @@ const CrudProducts = () => {
                             <tr key={product.id}>
                                 <td>{product.cod_art}</td>
                                 <td>
-                                {product.imagen_base64 ? (
+                                {product.imagen_url ? (
                                     <img
-                                        src={`data:image/jpeg;base64,${product.imagen_base64}`}
+                                        src={`data:image/jpeg;base64,${product.imagen_url}`}
                                         alt={product.descripcion}
                                         style={{ width: '64px', height: '64px', objectFit: 'cover' }}
                                         onError={(e) => {
