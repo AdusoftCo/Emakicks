@@ -269,15 +269,21 @@ const CrudProducts = () => {
             if (imageFile) {
                 // User selected new image → upload to Cloudinary
                 const cloudinaryUrl =
-                    "https://api.cloudinary.com/v1_1/dxgn8p0ye/image/upload";
-    
+                    `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUDINARY_CLOUD_NAME}/image/upload`;
+
                 const formDataCloud = new FormData();
                 formDataCloud.append("file", imageFile);
-                formDataCloud.append("upload_preset", "emakicks_unsigned");
-    
+                formDataCloud.append(
+                "upload_preset",
+                import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET
+                );
+
+                // ❗ Do NOT set headers manually
                 const uploadRes = await axios.post(cloudinaryUrl, formDataCloud);
-    
+
                 data.imagen_url = uploadRes.data.secure_url;
+   
+              
             } 
             else if (isEditing && selectedProduct?.imagen_url) {
                 // No new image selected → keep existing image
