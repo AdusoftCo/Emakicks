@@ -144,9 +144,10 @@ const CrudProducts = () => {
     // Fetch manufacturers from the API
     const fetchManufacturers = async () => {
         try {
-            const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/fabricants`
+            const response = await axios.get(
+                `${import.meta.env.VITE_API_URL}/api/products/fabricants`
             );
-          setManufacturers(response.data);
+            setManufacturers(response.data);
         } catch (err) {
           console.error('Error fetching manufacturers:', err);
         }
