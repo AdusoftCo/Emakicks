@@ -82,15 +82,15 @@ router.post('/', async (req, res) => {
       is_on_offer,
       fabricante_id,
       variaciones,
-      imagen_base64,
+      imagen_url,
       category
     } = req.body;
 
     let imageUrl = null;
 
     // Upload image to Cloudinary
-    if (imagen_base64) {
-      const upload = await cloudinary.v2.uploader.upload(imagen_base64, {
+    if (imagen_url) {
+      const upload = await cloudinary.v2.uploader.upload(imagen_url, {
         folder: 'productos'
       });
       imageUrl = upload.secure_url;
@@ -142,24 +142,11 @@ router.put('/', async (req, res) => {
       is_on_offer,
       fabricante_id,
       variaciones,
-      imagen_base64
+      imagen_url   // 👈 RECEIVE URL, NOT BASE64
     } = req.body;
 
-    let finalImageUrl = null;
-
-    if (imagen_base64) {
-      // Upload new image
-      const upload = await cloudinary.v2.uploader.upload(imagen_base64, {
-        folder: 'productos'
-      });
-      finalImageUrl = upload.secure_url;
-    } else {
-      // Keep old image
-      const current = await pool.query(
-        'SELECT imagen FROM proyecto.productos WHERE id=$1',
-        [id]
-      );
-      finalImageUrl = current.rows[0]?.imagen || null;
+    if (!id) {
+      return res.status(400).json({ error: "Product ID is required" });
     }
 
     await pool.query(
@@ -168,8 +155,16 @@ router.put('/', async (req, res) => {
            costo=$5, fecha_alta=$6, is_on_offer=$7, id_prov=$8, imagen=$9
        WHERE id=$10`,
       [
-        descripcion, cod_art, precio_doc, precio_oferta, costo,
-        fecha_alta, is_on_offer, fabricante_id, finalImageUrl, id
+        descripcion,
+        cod_art,
+        precio_doc,
+        precio_oferta,
+        costo,
+        fecha_alta,
+        is_on_offer,
+        fabricante_id,
+        imagen_url, // 👈 DIRECT URL
+        id
       ]
     );
 
@@ -195,9 +190,10 @@ router.put('/', async (req, res) => {
     res.json({ message: 'Product and variations updated successfully' });
 
   } catch (error) {
-    console.error('Error updating product:', error.message);
+    console.error('Error updating product:', error);
     res.status(500).json({ error: 'Failed to update product' });
   }
 });
+
 
 export default router;
