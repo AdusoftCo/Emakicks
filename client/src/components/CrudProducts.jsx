@@ -255,6 +255,7 @@ const CrudProducts = () => {
         try {
             const data = {
                 ...formData,
+                id: selectedProduct?.id,
                 fecha_alta: formData.fecha_alta
                     ? formData.fecha_alta.split("T")[0]
                     : "",

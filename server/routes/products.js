@@ -9,9 +9,9 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 cloudinary.v2.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD,
-  api_key: process.env.CLOUDINARY_KEY,
-  api_secret: process.env.CLOUDINARY_SECRET
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
 const router = express.Router();
@@ -86,15 +86,7 @@ router.post('/', async (req, res) => {
       category
     } = req.body;
 
-    let imageUrl = null;
-
-    // Upload image to Cloudinary
-    if (imagen_url) {
-      const upload = await cloudinary.v2.uploader.upload(imagen_url, {
-        folder: 'productos'
-      });
-      imageUrl = upload.secure_url;
-    }
+    const imageUrl = imagen_url || null; // ✅ just store it
 
     const result = await pool.query(
       `INSERT INTO proyecto.productos 
