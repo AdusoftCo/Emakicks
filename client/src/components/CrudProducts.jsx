@@ -239,13 +239,19 @@ const CrudProducts = () => {
 
     // Handle file input change and preview
     const handleFileChange = (e) => {
-        const file = e.target.files[0];
+        const file = e.target.files?.[0];
+        if (!file) return;
+      
         setImageFile(file);
       
-        // Show preview
-        const preview = URL.createObjectURL(file);
-        setImagePreviewUrl(preview);
+        // Clean previous preview (avoid memory leaks)
+        if (imagePreviewUrl) {
+          URL.revokeObjectURL(imagePreviewUrl);
+        }
+      
+        setImagePreviewUrl(URL.createObjectURL(file));
     };
+      
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -363,7 +369,7 @@ const CrudProducts = () => {
                     <div className="product-record" key={product.id}>
                         {product.imagen_url ? (
                             <img
-                                src={`data:image/jpeg;base64,${product.imagen_url}`}
+                                src={product.imagen_url || 'https://placehold.co/64x64/E2E8F0/A0AEC0?text=No+Img'}
                                 alt={product.descripcion}
                                 style={{ width: '64px', height: '64px', objectFit: 'cover' }}
                                 onError={(e) => {
@@ -421,23 +427,16 @@ const CrudProducts = () => {
                             <tr key={product.id}>
                                 <td>{product.cod_art}</td>
                                 <td>
-                                {product.imagen_url ? (
                                     <img
-                                        src={`data:image/jpeg;base64,${product.imagen_url}`}
+                                        src={product.imagen_url || 'https://placehold.co/64x64/E2E8F0/A0AEC0?text=No+Img'}
                                         alt={product.descripcion}
                                         style={{ width: '64px', height: '64px', objectFit: 'cover' }}
                                         onError={(e) => {
-                                        e.target.src = 'https://placehold.co/64x64/E2E8F0/A0AEC0?text=No+Img';
+                                        e.currentTarget.src =
+                                            'https://placehold.co/64x64/E2E8F0/A0AEC0?text=No+Img';
                                         }}
                                     />
-                                    ) : (
-                                    <img
-                                        src="https://placehold.co/64x64/E2E8F0/A0AEC0?text=No+Img"
-                                        alt="No image"
-                                        style={{ width: '64px', height: '64px', objectFit: 'cover' }}
-                                    />
-                                    )}
-                                </td>
+                                    </td>
                                 <td>{product.descripcion}</td>
                                 <td>{product.fabricante_nombre}</td>
                                 <td>
