@@ -32,6 +32,8 @@ const Home = () => {
         const fetchData = async () => {
           try {
             const offersResponse = await axios.get(`${API_BASE_URL}?type=offers`);
+            console.log("Image URL:", product.imagen_url);
+
             setOffers(offersResponse.data);
           } catch (error) {
             console.error("Error fetching offers:", error);
