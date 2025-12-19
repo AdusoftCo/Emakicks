@@ -136,7 +136,7 @@ const CrudProducts = () => {
       
           const normalized = response.data.map(p => ({
             ...p,
-            imagen_url: p.imagen_url || "", // ✅ map backend → frontend
+            imagen_url: p.imagen || "", // ✅ map backend → frontend
           }));
       
           setProducts(normalized);
@@ -283,30 +283,34 @@ const CrudProducts = () => {
             // ---------------------------------------------------------
     
             if (imageFile) {
-                console.log("Submitting with imageFile:", imageFile);
-
-                // User selected new image → upload to Cloudinary
-                const cloudinaryUrl =
-                    `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUDINARY_CLOUD_NAME}/image/upload`;
-
-                const formDataCloud = new FormData();
-                formDataCloud.append("file", imageFile);
-                formDataCloud.append(
-                "upload_preset",
-                import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET
-                );
-
-                // ❗ Do NOT set headers manually
-                const uploadRes = await axios.post(cloudinaryUrl, formDataCloud);
-
-                data.imagen_url = uploadRes.data.secure_url;
-   
+                try {
+                  console.log("Uploading to Cloudinary...");
               
-            } 
-            else if (isEditing && selectedProduct?.imagen_url) {
-                // No new image selected → keep existing image
-                data.imagen_url = selectedProduct.imagen_url;
-            }
+                  const cloudinaryUrl =
+                    `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUDINARY_CLOUD_NAME}/image/upload`;
+              
+                  const formDataCloud = new FormData();
+                  formDataCloud.append("file", imageFile);
+                  formDataCloud.append(
+                    "upload_preset",
+                    import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET
+                  );
+              
+                  console.log("Cloudinary URL:", cloudinaryUrl);
+                  console.log("Upload preset:", import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET);
+              
+                  const uploadRes = await axios.post(cloudinaryUrl, formDataCloud);
+              
+                  console.log("Cloudinary response:", uploadRes.data);
+              
+                  data.imagen_url = uploadRes.data.secure_url;
+              
+                } catch (err) {
+                  console.error("❌ Cloudinary upload failed:", err.response?.data || err);
+                  throw err;
+                }
+              }
+              
     
             // ---------------------------------------------------------
             // SAVE / UPDATE PRODUCT
