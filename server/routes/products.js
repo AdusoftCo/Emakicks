@@ -1,18 +1,11 @@
 // products.js
 import express from 'express';
 import pool from '../db.js';
-import cloudinary from 'cloudinary';
 import { fileURLToPath } from 'url';
 import path from 'path';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
-cloudinary.v2.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET
-});
 
 const router = express.Router();
 
@@ -134,13 +127,26 @@ router.put('/', async (req, res) => {
       is_on_offer,
       fabricante_id,
       variaciones,
-      imagen_url   // 👈 RECEIVE URL, NOT BASE64
+      imagen_url
     } = req.body;
 
     if (!id) {
       return res.status(400).json({ error: "Product ID is required" });
     }
 
+    // ✅ 1. Get current image from DB
+    const current = await pool.query(
+      `SELECT imagen FROM proyecto.productos WHERE id = $1`,
+      [id]
+    );
+
+    // ✅ 2. Decide which image to store
+    const finalImage =
+      imagen_url && imagen_url.trim() !== ""
+        ? imagen_url
+        : current.rows[0].imagen;
+
+    // ✅ 3. Update product safely
     await pool.query(
       `UPDATE proyecto.productos
        SET descripcion=$1, cod_art=$2, precio_doc=$3, precio_oferta=$4,
@@ -155,7 +161,7 @@ router.put('/', async (req, res) => {
         fecha_alta,
         is_on_offer,
         fabricante_id,
-        imagen_url, // 👈 DIRECT URL
+        finalImage, // 👈 IMPORTANT
         id
       ]
     );

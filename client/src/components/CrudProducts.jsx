@@ -128,18 +128,24 @@ const CrudProducts = () => {
 
     // Fetch products from the API
     const fetchProducts = async () => {
-        if (loading) return; // ✅ prevent loop
+        if (loading) return;
         setLoading(true);
+      
         try {
           const response = await axios.get(API_BASE_URL);
-          setProducts(response.data);
-          console.trace();
+      
+          const normalized = response.data.map(p => ({
+            ...p,
+            imagen_url: p.imagen_url || "", // ✅ map backend → frontend
+          }));
+      
+          setProducts(normalized);
         } catch (err) {
           console.error('Error fetching products:', err);
         } finally {
           setLoading(false);
         }
-      };
+    };
       
     // Fetch manufacturers from the API
     const fetchManufacturers = async () => {
@@ -160,6 +166,9 @@ const CrudProducts = () => {
 
     // open modal
     const openModal = (product = null) => {
+        setImageFile(null);          // ✅ IMPORTANT
+        setImagePreviewUrl("");      // ✅ IMPORTANT
+        setError("");
         fetchManufacturers(); // no await
     
         if (product) {
@@ -274,6 +283,8 @@ const CrudProducts = () => {
             // ---------------------------------------------------------
     
             if (imageFile) {
+                console.log("Submitting with imageFile:", imageFile);
+
                 // User selected new image → upload to Cloudinary
                 const cloudinaryUrl =
                     `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUDINARY_CLOUD_NAME}/image/upload`;
@@ -295,10 +306,6 @@ const CrudProducts = () => {
             else if (isEditing && selectedProduct?.imagen_url) {
                 // No new image selected → keep existing image
                 data.imagen_url = selectedProduct.imagen_url;
-            } 
-            else {
-                // Creating with no image → you can allow empty or enforce required
-                data.imagen_url = "";
             }
     
             // ---------------------------------------------------------
@@ -533,7 +540,7 @@ const CrudProducts = () => {
                                     <Form.Control
                                         type="date"
                                         name="fecha_alta"
-                                        value={FormData.fecha_alta}
+                                        value={formData.fecha_alta}
                                         onChange={handleInputChange}
                                     />
                                 </Form.Group>
