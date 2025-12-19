@@ -49,8 +49,8 @@ const Home = () => {
             : [];
     
         // Asegurar imagen base64 compatible
-        const safeImage = product.imagen_base64
-            ? `data:image/jpeg;base64,${product.imagen_base64}`
+        const safeImage = product.imagen_url
+            ? product.imagen_url
             : "https://placehold.co/400x400/E2E8F0/A0AEC0?text=No+Img";
     
         const cleanProduct = {
@@ -151,8 +151,8 @@ const Home = () => {
                                     <Card.Img 
                                         variant="top" 
                                         src={
-                                            prod.imagen_base64
-                                              ? `data:image/jpeg;base64,${prod.imagen_base64}`
+                                            prod.imagen_url
+                                              ? prod.imagen_url
                                               : "https://placehold.co/250x250/E2E8F0/A0AEC0?text=No+Img"
                                           }
                                           loading="lazy"
@@ -208,8 +208,8 @@ const Home = () => {
                             <img 
                                 loading="lazy" 
                                 src={
-                                    selectedProduct.imagen_base64
-                                      ? `data:image/jpeg;base64,${selectedProduct.imagen_base64}`
+                                    selectedProduct.imagen_url
+                                      ? `data:image/jpeg;base64,${selectedProduct.imagen_url}`
                                       : "https://placehold.co/400x400/E2E8F0/A0AEC0?text=No+Img"
                                   }
                                 alt={selectedProduct.descripcion} 
