@@ -166,9 +166,15 @@ router.put('/', async (req, res) => {
       ]
     );
 
-    const parsedVariaciones = Array.isArray(variaciones)
+    let parsedVariaciones = Array.isArray(variaciones)
       ? variaciones
       : JSON.parse(variaciones);
+
+    // 🚫 Remove empty variations
+    parsedVariaciones = parsedVariaciones.filter(v =>
+      (v.color && v.color.trim() !== '') ||
+      (v.talla && v.talla.trim() !== '')
+    );
 
     await pool.query(
       `DELETE FROM proyecto.variaciones WHERE producto_id = $1`,
@@ -177,11 +183,13 @@ router.put('/', async (req, res) => {
 
     if (parsedVariaciones.length > 0) {
       const values = parsedVariaciones
-        .map(v => `(${id}, '${v.color}', '${v.talla}', ${v.stock})`)
+        .map(v => `(${id}, '${v.color || ''}', '${v.talla || ''}', ${v.stock || 0})`)
         .join(', ');
+    
       await pool.query(
         `INSERT INTO proyecto.variaciones (producto_id, color, talla, stock)
-         VALUES ${values}`
+         VALUES ${values}
+         ON CONFLICT DO NOTHING`
       );
     }
 

@@ -173,13 +173,20 @@ const CrudProducts = () => {
     
         if (product) {
             const safeVariaciones = Array.isArray(product.variaciones)
-            ? product.variaciones.filter(
-                (v, i, arr) =>
-                    i === arr.findIndex(
-                    x => x.color === v.color && x.talla === v.talla
+                ? product.variaciones
+                    // 🚫 Remove empty rows
+                    .filter(v =>
+                        (v.color && v.color.trim() !== '') ||
+                        (v.talla && v.talla.trim() !== '')
                     )
-                )
-            : [];
+                    // ✅ Remove duplicates
+                    .filter(
+                        (v, i, arr) =>
+                        i === arr.findIndex(
+                            x => x.color === v.color && x.talla === v.talla
+                        )
+                    )
+                : [];
     
             let fabricanteId = product.fabricante_id;
     
