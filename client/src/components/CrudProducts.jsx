@@ -173,8 +173,13 @@ const CrudProducts = () => {
     
         if (product) {
             const safeVariaciones = Array.isArray(product.variaciones)
-                ? product.variaciones
-                : [];
+            ? product.variaciones.filter(
+                (v, i, arr) =>
+                    i === arr.findIndex(
+                    x => x.color === v.color && x.talla === v.talla
+                    )
+                )
+            : [];
     
             let fabricanteId = product.fabricante_id;
     
@@ -191,15 +196,19 @@ const CrudProducts = () => {
     
             setFormattedDate(dateOnly);
     
-            setFormData(prev => ({
-                ...prev,
-                ...product,
+            setFormData({
+                descripcion: product.descripcion || "",
+                cod_art: product.cod_art || "",
+                precio_doc: product.precio_doc || 0,
+                precio_oferta: product.precio_oferta || 0,
+                costo: product.costo || 0,
                 fecha_alta: dateOnly,
-                fabricante_id: fabricanteId ? String(fabricanteId) : "",
                 is_on_offer: product.is_on_offer === true,
-                variaciones: safeVariaciones,
+                fabricante_id: fabricanteId ? String(fabricanteId) : "",
                 imagen_url: product.imagen_url || "",
-            }));
+                category: product.category || "",
+                variaciones: safeVariaciones, // ✅ ONLY ONCE
+              });
     
             setImagePreviewUrl(product.imagen_url || "");
             setIsEditing(true);
@@ -213,13 +222,27 @@ const CrudProducts = () => {
     // Close Modal
     const closeModal = () => {
         setIsModalOpen(false);
-        setIsEditing(false); // ✅ Reset editing state
-        setError('');
+        setIsEditing(false);
+        setSelectedProduct(null);
+        setError("");
         setImageFile(null);
-        setImagePreviewUrl('');
-        };
+        setImagePreviewUrl("");
       
-
+        setFormData({
+          descripcion: "",
+          cod_art: "",
+          precio_doc: 0,
+          precio_oferta: 0,
+          costo: 0,
+          fecha_alta: "",
+          is_on_offer: false,
+          fabricante_id: "",
+          imagen_url: "",
+          category: "",
+          variaciones: [],
+        });
+    };
+      
     // Handle form input changes
     const handleInputChange = (e) => {
         const { name, value, type, checked } = e.target;
