@@ -31,10 +31,18 @@ const Home = () => {
     useEffect(() => {
         const fetchData = async () => {
           try {
-            const offersResponse = await axios.get(`${API_BASE_URL}?type=offers`);
-            console.log("Image URL:", product.imagen_url);
-
-            setOffers(offersResponse.data);
+            const offersResponse = await axios.get(
+              `${API_BASE_URL}?type=offers`
+            );
+      
+            const normalizedOffers = offersResponse.data.map(prod => ({
+                ...prod,
+                imagen_url: prod.imagen // 👈 CRITICAL LINE
+              }));
+        
+              console.log("Normalized offers:", normalizedOffers);
+        
+              setOffers(normalizedOffers);
           } catch (error) {
             console.error("Error fetching offers:", error);
           }
