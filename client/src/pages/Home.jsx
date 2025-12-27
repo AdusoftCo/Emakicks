@@ -216,18 +216,24 @@ const Home = () => {
                     {selectedProduct && (
                         <>
                             <img 
-                                loading="lazy" 
+                                loading="lazy"
                                 src={
                                     selectedProduct.imagen_url
-                                      ? `data:image/jpeg;base64,${selectedProduct.imagen_url}`
-                                      : "https://placehold.co/400x400/E2E8F0/A0AEC0?text=No+Img"
-                                  }
-                                alt={selectedProduct.descripcion} 
-                                className="w-100 mb-3" 
-                                style={{maxHeight: '400px', objectFit: 'contain'}} 
+                                    ? selectedProduct.imagen_url
+                                    : "https://placehold.co/400x400/E2E8F0/A0AEC0?text=No+Img"
+                                }
+                                alt={selectedProduct.descripcion}
+                                className="w-100 mb-3"
+                                style={{ maxHeight: "400px", objectFit: "contain" }}
+                                onError={(e) => {
+                                    e.currentTarget.src =
+                                    "https://placehold.co/400x400/E2E8F0/A0AEC0?text=No+Img";
+                                }}
                             />
+
                             <p><strong>Unidad:</strong> {formatPrice(selectedProduct.precio_oferta)}</p>
                             <p><strong>Docena:</strong> {formatPrice(selectedProduct.precio_doc)}</p>
+                            
                             <Form>
                                 <Form.Group className="mb-3">
                                     <Form.Label>Color</Form.Label>
