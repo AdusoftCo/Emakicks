@@ -1,3 +1,4 @@
+// CartContext.jsx
 import React, { createContext, useState, useEffect } from 'react';
 
 export const CartContext = createContext();
@@ -23,22 +24,40 @@ export const CartProvider = ({ children }) => {
     }
   }, [carrito]);
 
-  const agregarAlCarrito = (item) => {
-    const existingItem = carrito.find(cartItem => 
-      cartItem.id === item.id && 
-      cartItem.color === item.color && 
-      cartItem.talla === item.talla
+  useEffect(() => {
+    setCarrito(prev =>
+      prev.map(item => ({
+        ...item,
+        imagen_url: item.imagen_url || item.imagen || null
+      }))
     );
+  }, []);
+
+  const agregarAlCarrito = (item) => {
+    const normalizedItem = {
+      ...item,
+      imagen_url: item.imagen_url || item.imagen || null,
+      quantity: item.quantity || 1,
+    };
+  
+    const existingItem = carrito.find(cartItem =>
+      cartItem.id === normalizedItem.id &&
+      cartItem.color === normalizedItem.color &&
+      cartItem.talla === normalizedItem.talla
+    );
+  
     if (existingItem) {
       setCarrito(
         carrito.map(cartItem =>
-          cartItem.id === item.id && cartItem.color === item.color && cartItem.talla === item.talla
-            ? { ...cartItem, quantity: cartItem.quantity + item.quantity }
+          cartItem.id === normalizedItem.id &&
+          cartItem.color === normalizedItem.color &&
+          cartItem.talla === normalizedItem.talla
+            ? { ...cartItem, quantity: cartItem.quantity + normalizedItem.quantity }
             : cartItem
         )
       );
     } else {
-      setCarrito([...carrito, { ...item }]);
+      setCarrito([...carrito, normalizedItem]);
     }
   };
 
