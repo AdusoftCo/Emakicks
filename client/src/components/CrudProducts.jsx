@@ -298,13 +298,24 @@ const CrudProducts = () => {
         setError("");
     
         try {
+            const cleanedVariaciones = formData.variaciones
+                .filter(v =>
+                    (v.color && v.color.trim() !== '') ||
+                    (v.talla && v.talla.trim() !== '')
+                )
+                .map(v => ({
+                    color: v.color?.trim() || null,
+                    talla: v.talla?.trim() || null,
+                    stock: Number(v.stock) || 0
+                }));
+
             const data = {
                 ...formData,
                 id: selectedProduct?.id,
                 fecha_alta: formData.fecha_alta
                     ? formData.fecha_alta.split("T")[0]
                     : "",
-                variaciones: formData.variaciones,
+                variaciones: cleanedVariaciones,
                 is_on_offer: formData.is_on_offer === true,
             };
     
@@ -656,43 +667,63 @@ const CrudProducts = () => {
                             {formData.variaciones.map((v, index) => (
                                 <div key={index} className="mb-2">
                                     <Form.Control
-                                    type="text"
-                                    placeholder="Color"
-                                    value={v.color}
-                                    onChange={(e) => {
-                                        const newVars = [...formData.variaciones];
-                                        newVars[index].color = e.target.value;
-                                        setFormData({ ...formData, variaciones: newVars });
-                                    }}
+                                        type="text"
+                                        placeholder="Color"
+                                        value={v.color}
+                                        onChange={(e) => {
+                                            const newVars = [...formData.variaciones];
+                                            newVars[index].color = e.target.value;
+                                            setFormData({ ...formData, variaciones: newVars });
+                                        }}
                                     />
                                     <Form.Control
-                                    type="text"
-                                    placeholder="Talla"
-                                    value={v.talla}
-                                    onChange={(e) => {
-                                        const newVars = [...formData.variaciones];
-                                        newVars[index].talla = e.target.value;
-                                        setFormData({ ...formData, variaciones: newVars });
-                                    }}
+                                        type="text"
+                                        placeholder="Talla"
+                                        value={v.talla}
+                                        onChange={(e) => {
+                                            const newVars = [...formData.variaciones];
+                                            newVars[index].talla = e.target.value;
+                                            setFormData({ ...formData, variaciones: newVars });
+                                        }}
                                     />
                                     <Form.Control
-                                    type="number"
-                                    placeholder="Stock"
-                                    value={v.stock}
-                                    onChange={(e) => {
-                                        const newVars = [...formData.variaciones];
-                                        newVars[index].stock = parseInt(e.target.value, 10);
-                                        setFormData({ ...formData, variaciones: newVars });
-                                    }}
+                                        type="number"
+                                        placeholder="Stock"
+                                        value={v.stock}
+                                        onChange={(e) => {
+                                            const newVars = [...formData.variaciones];
+                                            newVars[index].stock = parseInt(e.target.value, 10);
+                                            setFormData({ ...formData, variaciones: newVars });
+                                        }}
                                     />
-                                </div>
-                                ))}
 
-                                <Button onClick={() =>
-                                setFormData({ ...formData, variaciones: [...formData.variaciones, { color: "", talla: "", stock: 0 }] })
-                                }>
+                                    <Button
+                                        variant="outline-danger"
+                                        size="sm"
+                                        onClick={() => {
+                                            const newVars = formData.variaciones.filter((_, i) => i !== index);
+                                            setFormData({ ...formData, variaciones: newVars });
+                                        }}
+                                    >
+                                        Remove
+                                    </Button>
+                                </div>
+                            ))}
+
+                            <Button
+                                onClick={() => {
+                                    setFormData(prev => ({
+                                    ...prev,
+                                    variaciones: [
+                                        ...prev.variaciones,
+                                        { color: "", talla: "", stock: "" }
+                                    ]
+                                    }));
+                                }}
+                            >
                                 Add Variation
-                                </Button>
+                            </Button>
+
                         </Form.Group>
 
                         <div className="d-flex justify-content-end">
