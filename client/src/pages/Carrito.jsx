@@ -7,8 +7,6 @@ import { CartContext } from '../components/CartContext';
 import { formatPrice } from '../utils/formater';
 import CuErre from '../assets/0001.png';
 
-const BASE_IMAGE_URL = `${import.meta.env.VITE_API_URL}/imagenes/`;
-
 const Carrito = () => {
     const { carrito, eliminarDelCarrito, aumentarCantidad, disminuirCantidad, vaciarCarrito } = useContext(CartContext);
     
@@ -178,8 +176,14 @@ const Carrito = () => {
                                 <li key={getItemKey(item)} className="mb-4 p-3 border">
                                     <Row className="align-items-center">
                                         <Col xs={3} sm={2}>
-                                            <img src={`${BASE_IMAGE_URL}${item.imagen}`} alt={item.descripcion} className="img-fluid rounded" />
+                                            <img
+                                                loading="lazy"
+                                                src={item.imagen_url || "https://placehold.co/200x200?text=No+Img"}
+                                                alt={item.descripcion}
+                                                className="img-fluid rounded"
+                                            />
                                         </Col>
+
                                         <Col xs={9} sm={5}>
                                             <div className="d-flex flex-column">
                                                 <h5 className="mb-1">{item.descripcion}</h5>
@@ -188,6 +192,7 @@ const Carrito = () => {
                                                 <p className="mb-0">Precio: {formatPrice(item.precio_oferta || item.precio_doc)}</p>
                                             </div>
                                         </Col>
+
                                         <Col xs={12} sm={3} className="mt-3 mt-sm-0 text-center text-sm-start">
                                             <div className="d-flex align-items-center justify-content-center justify-content-sm-start">
                                                 <Button variant="outline-secondary" size="sm" onClick={() => disminuirCantidad(item)} style={{borderRadius: '15px'}}>-</Button>
@@ -195,6 +200,7 @@ const Carrito = () => {
                                                 <Button variant="outline-secondary" size="sm" onClick={() => aumentarCantidad(item)} style={{borderRadius: '15px'}}>+</Button>
                                             </div>
                                         </Col>
+
                                         <Col xs={12} sm={2} className="mt-3 mt-sm-0 text-center text-sm-end">
                                             <Button variant="danger" size="sm" onClick={() => eliminarDelCarrito(item)} style={{borderRadius: '15px'}}>Eliminar</Button>
                                         </Col>
