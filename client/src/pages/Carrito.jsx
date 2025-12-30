@@ -177,7 +177,11 @@ const Carrito = () => {
                                         <Col xs={3} sm={2}>
                                             <img
                                                 loading="lazy"
-                                                src={item.imagen_url || item.imagen || "https://placehold.co/200x200?text=No+Img"}
+                                                src={
+                                                    item.imagen_url?.startsWith("http")
+                                                    ? item.imagen_url
+                                                    : "https://placehold.co/200x200?text=No+Img"
+                                                }
                                                 alt={item.descripcion}
                                                 className="img-fluid rounded"
                                             />

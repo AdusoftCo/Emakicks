@@ -4,13 +4,20 @@ import React, { createContext, useState, useEffect } from 'react';
 export const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
+  const normalizeImage = (item) =>
+    item.imagen_url?.startsWith("http")
+      ? item.imagen_url
+      : item.imagen?.startsWith("http")
+      ? item.imagen
+      : null;
+
   const [carrito, setCarrito] = useState(() => {
     try {
       const savedCart = localStorage.getItem('carrito');
       return savedCart
         ? JSON.parse(savedCart).map(item => ({
             ...item,
-            imagen_url: item.imagen_url || item.imagen || null,
+            imagen_url: normalizeImage(item),
             quantity: item.quantity || 1,
           }))
         : [];
@@ -32,7 +39,7 @@ export const CartProvider = ({ children }) => {
   const agregarAlCarrito = (item) => {
     const normalizedItem = {
       ...item,
-      imagen_url: item.imagen_url || item.imagen || null,
+      imagen_url: normalizeImage(item),
       quantity: item.quantity || 1,
     };
   
