@@ -5,10 +5,15 @@ export const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
   const [carrito, setCarrito] = useState(() => {
-    // Load cart from local storage on initial render
     try {
       const savedCart = localStorage.getItem('carrito');
-      return savedCart ? JSON.parse(savedCart) : [];
+      return savedCart
+        ? JSON.parse(savedCart).map(item => ({
+            ...item,
+            imagen_url: item.imagen_url || item.imagen || null,
+            quantity: item.quantity || 1,
+          }))
+        : [];
     } catch (error) {
       console.error("Failed to load cart from localStorage", error);
       return [];
@@ -23,15 +28,6 @@ export const CartProvider = ({ children }) => {
       console.error("Failed to save cart to localStorage", error);
     }
   }, [carrito]);
-
-  useEffect(() => {
-    setCarrito(prev =>
-      prev.map(item => ({
-        ...item,
-        imagen_url: item.imagen_url || item.imagen || null
-      }))
-    );
-  }, []);
 
   const agregarAlCarrito = (item) => {
     const normalizedItem = {

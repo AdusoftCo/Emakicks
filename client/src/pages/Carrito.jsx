@@ -13,7 +13,7 @@ const Carrito = () => {
     const [deliveryOption, setDeliveryOption] = useState('pickup');
     const [zipCode, setZipCode] = useState('');
     const [shippingOptions, setShippingOptions] = useState([]);
-    const [selectedShippingOptionIndex, setSelectedShippingOptionIndex] = useState(null);
+    const [selectedShippingOption, setSelectedShippingOption] = useState(null);
     const [loading, setLoading] = useState(false);
     
     const [showPaymentForm, setShowPaymentForm] = useState(false);
@@ -26,7 +26,7 @@ const Carrito = () => {
     const currencyFormatter = new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' });
 
     const subtotal = carrito.reduce((acc, item) => acc + (item.precio_oferta || item.precio_doc) * item.quantity, 0);
-    const finalTotal = subtotal + (shippingOptions[selectedShippingOptionIndex]?.price || 0);
+    const finalTotal = subtotal + (selectedShippingOption?.price || 0);
 
     const getItemKey = (item) => `${item.id}-${item.color || 'no-color'}-${item.talla || 'no-size'}`;
 
@@ -60,7 +60,7 @@ const Carrito = () => {
     const handleCalculateShipping = async () => {
         setLoading(true);
         setShippingOptions([]);
-        setSelectedShippingOptionIndex(null);
+        setSelectedShippingOption(null);
 
         try {
             const SHIPPING_API_URL = `${import.meta.env.VITE_API_URL}/api/calculate-shipping`;
@@ -87,19 +87,16 @@ const Carrito = () => {
 
             setShippingOptions(data.options);
             if (data.options?.length > 0) {
-                setSelectedShippingOptionIndex(0);
+                setSelectedShippingOption(data.options[0]);
             }
+              
         } catch (error) {
             console.error('Fallo en la llamada a la API de envío:', error);
             setShippingOptions([]);
-            setSelectedShippingOptionIndex(null);
+            setSelectedShippingOption(null);
         } finally {
             setLoading(false);
         }
-    };
-
-    const handleShippingOptionChange = (index) => {
-        setSelectedShippingOptionIndex(index);
     };
 
     const handleProceedToPayment = () => {
@@ -113,8 +110,7 @@ const Carrito = () => {
     };
 
     const handleFinalCheckout = async () => {
-        const selectedShippingOption = shippingOptions[selectedShippingOptionIndex];
-
+        
         const orderSummary = carrito.map(item =>
             `Producto: ${item.descripcion} (x${item.quantity})\n` +
             `Precio unitario: ${formatPrice(item.precio_oferta || item.precio_doc)}\n` +
@@ -122,9 +118,12 @@ const Carrito = () => {
             (item.talla ? `Talla: ${item.talla}\n` : '')
         ).join('\n');
 
-        const shippingDetails = deliveryOption === 'delivery' && selectedShippingOption
-            ? `\nTipo de Envío: ${selectedShippingOption.name}\nCosto de Envío: ${formatPrice(selectedShippingOption.price)}\nEntrega: ${selectedShippingOption.days}`
-            : '\nRetiro en tienda';
+        const shippingDetails =
+            deliveryOption === 'delivery' && selectedShippingOption
+                ? `\nTipo de Envío: ${selectedShippingOption.company}
+            Costo de Envío: ${formatPrice(selectedShippingOption.price)}
+            Entrega: ${selectedShippingOption.deliveryTimeMin}-${selectedShippingOption.deliveryTimeMax} días`
+                : '\nRetiro en tienda';
 
         const whatsappMessage = 
             `¡Hola! Me gustaría hacer un pedido.\n\n` +
@@ -178,7 +177,7 @@ const Carrito = () => {
                                         <Col xs={3} sm={2}>
                                             <img
                                                 loading="lazy"
-                                                src={item.imagen_url || "https://placehold.co/200x200?text=No+Img"}
+                                                src={item.imagen_url || item.imagen || "https://placehold.co/200x200?text=No+Img"}
                                                 alt={item.descripcion}
                                                 className="img-fluid rounded"
                                             />
@@ -308,13 +307,14 @@ const Carrito = () => {
                                                                 className="form-check-input"
                                                                 type="radio"
                                                                 name="shippingOption"
-                                                                id={`shipping-${index}`}
-                                                                checked={selectedShippingOptionIndex === index}
-                                                                onChange={() => handleShippingOptionChange(index)}
+                                                                checked={selectedShippingOption === option}
+                                                                onChange={() => setSelectedShippingOption(option)}
                                                             />
                                                             <label className="form-check-label d-flex justify-content-between" htmlFor={`shipping-${index}`}>
                                                                 {/* Una vez que veas el nombre del campo en la consola, reemplaza "option.days" con el nombre correcto. */}
-                                                                <span>{option.company}({option.deliveryTimeMin}-{option.deliveryTimeMax} días)</span>
+                                                                <span>
+                                                                    {option.company}({option.deliveryTimeMin}-{option.deliveryTimeMax} días)
+                                                                </span>
                                                                 <span>{currencyFormatter.format(option.price)}</span>
                                                             </label>
                                                         </div>
@@ -328,7 +328,7 @@ const Carrito = () => {
                                     className="w-100 btn-rounded"
                                     onClick={handleProceedToPayment}
                                     style={{ backgroundColor: '#5728b7', color: 'white'}}
-                                    disabled={carrito.length === 0 || (deliveryOption === 'delivery' && selectedShippingOptionIndex === null)}
+                                    disabled={carrito.length === 0 || (deliveryOption === 'delivery' && !selectedShippingOption)}
                                 >
                                     Continuar con el pago
                                 </Button>
