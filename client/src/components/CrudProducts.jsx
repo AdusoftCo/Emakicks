@@ -645,7 +645,16 @@ const CrudProducts = () => {
                                     )}
                                 </Form.Group>
 
-                                    
+                                <Form.Group className="mb-3">
+                                    <Form.Check
+                                        type="checkbox"
+                                        name="is_on_offer"
+                                        label="En Oferta"
+                                        checked={formData.is_on_offer}
+                                        onChange={handleInputChange}
+                                    />
+                                </Form.Group>
+                                
                                 <FormGroup controlId="category" className='mb-3'>
                                     <FormLabel>Categoria</FormLabel>
                                     <FormSelect
