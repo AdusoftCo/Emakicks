@@ -1,0 +1,114 @@
+body, html {
+    height: 100%; 
+    margin: 0;
+}
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+.main-content {
+    flex: 1;
+}
+
+.login {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    flex-direction: column;
+    padding-top: 4rem;
+}
+
+.text-center {
+    text-align: center;
+    width: 100%;
+}
+.img-fluid {
+    display: block;
+    margin: 0 auto;
+}
+.login-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+.login-form {
+    display: flex;
+    text-align: center;
+    flex-direction: column;
+    width: 100%;
+    max-width: 350px;
+}
+.disabled-link {
+    color: #adb5bd;
+}
+.mb-3 {
+    width: 100%;
+    text-align: center;
+}
+.btn {
+    display: inline-block;
+}
+
+/* Footer Social Icons */
+footer {
+    background-color: #abd5db;
+    padding: 20px;
+    text-align: center;
+}
+.social-icons {
+    text-align: center;
+    margin-top: 10px;
+  }
+
+  .social-icons a {
+    margin: 0 15px;
+    font-size: 2rem;
+  }
+
+  /* Footer text */
+  .footer-text {
+    text-align: center;
+    margin-top: 20px;
+    color: black;
+    font-size: 0.8rem;
+  }
+
+  .btn-rounded {
+    border-radius: 15px;
+    height: 60px; 
+    width: auto; 
+    padding: 0 20px; 
+    font-size: 26px;
+    background-color: #5728b7;
+  }
+
+/* ============================= */
+/* CrudProducts – Category Buttons */
+/* ============================= */
+
+.category-buttons {
+    display: flex !important;
+    gap: 0.5rem !important;
+    overflow-x: auto !important;
+    white-space: nowrap !important;
+  }
+  
+  .category-btn {
+    border: 2px solid #5728b7 !important;
+    color: #5728b7 !important;
+    background-color: transparent !important;
+    font-weight: 600 !important;
+  }
+  
+  .category-btn.active {
+    background-color: #5728b7 !important;
+    color: white !important;
+  }
+  
+  .category-btn:hover {
+    background-color: #5728b7 !important;
+    color: white !important;
+  }
+  

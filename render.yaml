@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: emakicks-backend
+    env: static
+    plan: free
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    rootDir: client
+    envVars:
+      - key: DATABASE_URL
+        value: postgresql://emakicks_db_user:p4G6qZrPQA1RfGJ9CG2yn4KnkbRMSQPB@dpg-d45ll5buibrs73f8jpn0-a/emakicks_db
+      - key: CORREO_ARGENTINO_USE
+        value: Emakic
+      - key: CORREO_ARGENTINO_PASSWORD
+        value: Casino15+
+
+  - type: web
+    name: emakicks-frontend
+    env: static
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    rootDir: client
